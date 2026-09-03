@@ -1,0 +1,712 @@
+@{
+
+    Layout = null;
+
+    var hoTen = ViewBag.HoTen ?? "Tư vấn viên";
+
+}
+
+<!DOCTYPE html>
+
+<html lang="vi">
+
+<head>
+
+    <meta charset="utf-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Tư vấn viên - LinguistAI</title>
+
+    <!-- Tailwind -->
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <!-- Inter -->
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+          rel="stylesheet">
+
+    <!-- Material Symbols -->
+
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:FILL@0..1"
+          rel="stylesheet">
+
+    <script>
+
+        tailwind.config = {
+
+            theme: {
+
+                extend: {
+
+                    colors: {
+
+                        primary: "#091426",
+
+                        "primary-container": "#1e293b",
+
+                        "on-primary": "#ffffff",
+
+                        background: "#f7f9fb",
+
+                        surface: "#f7f9fb",
+
+                        "surface-container-low": "#f2f4f6",
+
+                        "surface-container": "#eceef0",
+
+                        "surface-container-high": "#e6e8ea",
+
+                        "surface-container-lowest": "#ffffff",
+
+                        "surface-variant": "#e0e3e5",
+
+                        "outline-variant": "#c5c6cd",
+
+                        "on-surface": "#191c1e",
+
+                        "on-surface-variant": "#45474c",
+
+                        secondary: "#006a61",
+
+                        error: "#ba1a1a"
+
+                    },
+
+                    fontFamily: {
+
+                        sans: ["Inter"]
+
+                    },
+
+                    borderRadius: {
+
+                        lg: "0.5rem",
+
+                        xl: "0.75rem"
+
+                    }
+
+                }
+
+            }
+
+        };
+
+    </script>
+
+    <style>
+
+        * {
+
+            box-sizing: border-box;
+
+        }
+
+        body {
+
+            font-family: 'Inter', sans-serif;
+
+        }
+
+        .sidebar-item {
+
+            transition: all 0.2s ease;
+
+        }
+
+        .sidebar-item:hover {
+
+            background: #e6e8ea;
+
+        }
+
+        .sidebar-item.active {
+
+            background: #091426;
+
+            color: white;
+
+        }
+
+        .stat-card {
+
+            transition: all 0.2s ease;
+
+        }
+
+        .stat-card:hover {
+
+            transform: translateY(-2px);
+
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+
+        }
+
+        .table-row {
+
+            transition: background 0.15s ease;
+
+        }
+
+        .table-row:hover {
+
+            background: #f7f9fb;
+
+        }
+
+        .modal-backdrop {
+
+            background: rgba(9, 20, 38, 0.5);
+
+        }
+
+    </style>
+
+</head>
+
+<body class="bg-background text-on-surface">
+
+<div class="min-h-screen flex">
+
+    <!-- ================================================= -->
+    <!-- SIDEBAR -->
+    <!-- ================================================= -->
+
+    <aside class="w-[250px] bg-white border-r border-outline-variant fixed left-0 top-0 bottom-0 flex flex-col">
+
+        <!-- LOGO -->
+
+        <div class="h-[80px] flex items-center px-6 border-b border-surface-variant">
+
+            <div class="w-10 h-10 rounded-lg bg-primary text-white flex items-center justify-center mr-3">
+
+                <span class="material-symbols-outlined"
+                      style="font-variation-settings:'FILL' 1">
+                    school
+                </span>
+
+            </div>
+
+            <div>
+
+                <div class="font-bold text-primary text-lg">
+                    LinguistAI
+                </div>
+
+                <div class="text-xs text-on-surface-variant">
+                    Tư vấn viên
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- MENU -->
+
+        <nav class="flex-1 px-3 py-5 space-y-1">
+    <a asp-controller="TuVanVien" asp-action="KhoaHocMoLop"
+       class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-surface-variant">
+        <span class="material-symbols-outlined">menu_book</span>
+        Khóa học đang mở
+    </a>
+</nav>
+
+        <!-- USER / LOGOUT -->
+
+        <div class="border-t border-surface-variant p-4">
+
+            <div class="flex items-center gap-3 mb-3">
+
+                <div class="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center font-semibold">
+                    @(hoTen.ToString().Substring(0, 1).ToUpper())
+                </div>
+
+                <div class="min-w-0">
+
+                    <div class="font-medium text-sm truncate">
+                        @hoTen
+                    </div>
+
+                    <div class="text-xs text-on-surface-variant">
+                        Tư vấn viên
+                    </div>
+
+                </div>
+
+            </div>
+
+            <a asp-controller="Account"
+               asp-action="Logout"
+               class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium text-on-surface-variant hover:bg-surface-container transition">
+                <span class="material-symbols-outlined text-[20px]">
+                    logout
+                </span>
+                Đăng xuất
+            </a>
+
+        </div>
+
+    </aside>
+
+    <!-- ================================================= -->
+    <!-- MAIN -->
+    <!-- ================================================= -->
+
+    <main class="ml-[250px] flex-1 min-h-screen">
+
+        <!-- TOPBAR -->
+
+        <header class="h-[80px] bg-white border-b border-outline-variant flex items-center justify-between px-8">
+
+            <div>
+                <h1 class="text-xl font-semibold text-primary">
+                    Tổng quan
+                </h1>
+                <p class="text-sm text-on-surface-variant mt-1">
+                    Xin chào @hoTen, chúc bạn một ngày tư vấn hiệu quả
+                </p>
+            </div>
+
+            <div class="flex items-center gap-4">
+
+                <a asp-controller="Account"
+                   asp-action="Logout"
+                   class="flex items-center gap-2 px-4 py-2 rounded-lg border border-outline-variant text-sm font-medium text-on-surface-variant hover:bg-surface-container transition">
+                    <span class="material-symbols-outlined text-[20px]">
+                        logout
+                    </span>
+                    Đăng xuất
+                </a>
+
+            </div>
+
+        </header>
+
+        <!-- CONTENT -->
+
+        <div class="p-8">
+
+            <!-- ================================================= -->
+            <!-- STATISTICS -->
+            <!-- ================================================= -->
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-8">
+
+                <div class="stat-card bg-white rounded-xl border border-outline-variant p-5">
+                    <div class="w-11 h-11 rounded-lg bg-surface-container flex items-center justify-center">
+                        <span class="material-symbols-outlined text-primary">
+                            person_add
+                        </span>
+                    </div>
+                    <div class="mt-5">
+                        <div class="text-sm text-on-surface-variant">
+                            Khách hàng mới (tuần này)
+                        </div>
+                        <div id="statKhachMoi" class="text-3xl font-semibold text-primary mt-1">
+                            0
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card bg-white rounded-xl border border-outline-variant p-5">
+                    <div class="w-11 h-11 rounded-lg bg-surface-container flex items-center justify-center">
+                        <span class="material-symbols-outlined text-secondary">
+                            event
+                        </span>
+                    </div>
+                    <div class="mt-5">
+                        <div class="text-sm text-on-surface-variant">
+                            Cuộc hẹn hôm nay
+                        </div>
+                        <div id="statHenHomNay" class="text-3xl font-semibold text-primary mt-1">
+                            0
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card bg-white rounded-xl border border-outline-variant p-5">
+                    <div class="w-11 h-11 rounded-lg bg-surface-container flex items-center justify-center">
+                        <span class="material-symbols-outlined text-primary">
+                            task_alt
+                        </span>
+                    </div>
+                    <div class="mt-5">
+                        <div class="text-sm text-on-surface-variant">
+                            Tư vấn thành công (tháng)
+                        </div>
+                        <div id="statThanhCong" class="text-3xl font-semibold text-primary mt-1">
+                            0
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card bg-white rounded-xl border border-outline-variant p-5">
+                    <div class="w-11 h-11 rounded-lg bg-surface-container flex items-center justify-center">
+                        <span class="material-symbols-outlined text-error">
+                            hourglass_empty
+                        </span>
+                    </div>
+                    <div class="mt-5">
+                        <div class="text-sm text-on-surface-variant">
+                            Chờ phản hồi
+                        </div>
+                        <div id="statChoPhanHoi" class="text-3xl font-semibold text-primary mt-1">
+                            0
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ================================================= -->
+            <!-- LỊCH HẸN TƯ VẤN HÔM NAY -->
+            <!-- ================================================= -->
+
+            <div class="bg-white rounded-xl border border-outline-variant mb-8">
+
+                <div class="p-6 border-b border-surface-variant">
+                    <h3 class="font-semibold text-primary">
+                        Lịch hẹn tư vấn hôm nay
+                    </h3>
+                    <p class="text-sm text-on-surface-variant mt-1">
+                        Các cuộc hẹn bạn phụ trách trong ngày
+                    </p>
+                </div>
+
+                <div id="dsLichHen" class="divide-y divide-surface-variant">
+                </div>
+
+                <div id="oRongLich" class="hidden px-6 py-10 text-center text-on-surface-variant">
+                    <span class="material-symbols-outlined text-4xl text-outline-variant">
+                        event_available
+                    </span>
+                    <div class="mt-2 text-sm">
+                        Hôm nay bạn không có lịch hẹn
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ================================================= -->
+            <!-- DANH SÁCH KHÁCH HÀNG TIỀM NĂNG -->
+            <!-- ================================================= -->
+
+            <div class="bg-white rounded-xl border border-outline-variant">
+
+                <div class="p-6 border-b border-surface-variant">
+                    <h3 class="font-semibold text-primary">
+                        Khách hàng tiềm năng
+                    </h3>
+                    <p class="text-sm text-on-surface-variant mt-1">
+                        Danh sách khách hàng bạn đang chăm sóc và tư vấn
+                    </p>
+                </div>
+
+                <div class="overflow-x-auto">
+
+                    <table class="w-full text-sm">
+
+                        <thead>
+                            <tr class="border-b border-surface-variant text-left">
+                                <th class="px-6 py-4 font-medium text-on-surface-variant">Mã KH</th>
+                                <th class="px-6 py-4 font-medium text-on-surface-variant">Họ tên</th>
+                                <th class="px-6 py-4 font-medium text-on-surface-variant">Số điện thoại</th>
+                                <th class="px-6 py-4 font-medium text-on-surface-variant">Khóa học quan tâm</th>
+                                <th class="px-6 py-4 font-medium text-on-surface-variant">Nguồn</th>
+                                <th class="px-6 py-4 font-medium text-on-surface-variant">Trạng thái</th>
+                                <th class="px-6 py-4 font-medium text-on-surface-variant text-right">Thao tác</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="thanBangKhach">
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+<script>
+
+    // ================================================
+    // DỮ LIỆU MẪU (sẽ thay bằng dữ liệu thật khi nối CSDL)
+    // ================================================
+
+    const lichHenHomNay = [
+        { gio: "09:00 - 09:30", khach: "Nguyễn Văn A", noiDung: "Tư vấn khóa Anh văn giao tiếp", hinhThuc: "Gọi điện", trangThai: "Sắp diễn ra" },
+        { gio: "15:30 - 16:00", khach: "Trần Thị B", noiDung: "Tư vấn khóa TOEIC 650+", hinhThuc: "Gặp trực tiếp", trangThai: "Sắp diễn ra" },
+    ];
+
+    const dsKhachHang = [
+        { ma: "KH001", ten: "Nguyễn Văn A", sdt: "0901 234 567", khoaHocQuanTam: "Anh văn giao tiếp cơ bản", nguon: "Facebook Ads", trangThai: "Đang tư vấn" },
+        { ma: "KH002", ten: "Trần Thị B", sdt: "0912 345 678", khoaHocQuanTam: "TOEIC 650+", nguon: "Website", trangThai: "Chờ phản hồi" },
+        { ma: "KH003", ten: "Lê Văn C", sdt: "0987 654 321", khoaHocQuanTam: "Anh văn giao tiếp nâng cao", nguon: "Giới thiệu", trangThai: "Đã đăng ký" },
+    ];
+
+    // ================================================
+    // RENDER THỐNG KÊ
+    // ================================================
+
+    function renderThongKe() {
+
+        document.getElementById("statKhachMoi").textContent = dsKhachHang.length;
+        document.getElementById("statHenHomNay").textContent = lichHenHomNay.length;
+
+        const daThanhCong = dsKhachHang.filter(kh => kh.trangThai === "Đã đăng ký").length;
+        document.getElementById("statThanhCong").textContent = daThanhCong;
+
+        const choPhanHoi = dsKhachHang.filter(kh => kh.trangThai === "Chờ phản hồi").length;
+        document.getElementById("statChoPhanHoi").textContent = choPhanHoi;
+
+    }
+
+    // ================================================
+    // RENDER LỊCH HẸN HÔM NAY
+    // ================================================
+
+    function renderLichHen() {
+
+        const dsLichHen = document.getElementById("dsLichHen");
+        const oRongLich = document.getElementById("oRongLich");
+
+        dsLichHen.innerHTML = "";
+
+        if (lichHenHomNay.length === 0) {
+            oRongLich.classList.remove("hidden");
+            return;
+        }
+
+        oRongLich.classList.add("hidden");
+
+        lichHenHomNay.forEach(hen => {
+
+            const dong = document.createElement("div");
+            dong.className = "px-6 py-4 flex items-center justify-between";
+
+            dong.innerHTML = `
+                <div class="flex items-center gap-4">
+                    <div class="w-11 h-11 rounded-lg bg-surface-container flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-primary">schedule</span>
+                    </div>
+                    <div>
+                        <div class="font-medium text-on-surface">${hen.khach} · ${hen.noiDung}</div>
+                        <div class="text-xs text-on-surface-variant mt-0.5">${hen.gio} · ${hen.hinhThuc}</div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-secondary/10 text-secondary">
+                        ${hen.trangThai}
+                    </span>
+                    <button class="px-3 py-2 rounded-lg border border-outline-variant text-xs font-medium text-on-surface-variant hover:bg-surface-container transition">
+                        Xem chi tiết
+                    </button>
+                </div>
+            `;
+
+            dsLichHen.appendChild(dong);
+
+        });
+
+    }
+
+    // ================================================
+    // RENDER BẢNG KHÁCH HÀNG
+    // ================================================
+
+    function mauTrangThaiKhach(trangThai) {
+        if (trangThai === "Đã đăng ký") return "bg-secondary/10 text-secondary";
+        if (trangThai === "Đang tư vấn") return "bg-blue-50 text-blue-700";
+        if (trangThai === "Chờ phản hồi") return "bg-amber-50 text-amber-700";
+        return "bg-surface-container text-on-surface-variant";
+    }
+
+    function renderBangKhach() {
+
+        const thanBangKhach = document.getElementById("thanBangKhach");
+        thanBangKhach.innerHTML = "";
+
+        dsKhachHang.forEach(khach => {
+
+            const hang = document.createElement("tr");
+            hang.className = "table-row border-b border-surface-variant";
+
+            hang.innerHTML = `
+                <td class="px-6 py-4 font-medium text-primary">${khach.ma}</td>
+                <td class="px-6 py-4 text-on-surface">${khach.ten}</td>
+                <td class="px-6 py-4 text-on-surface-variant">${khach.sdt}</td>
+                <td class="px-6 py-4 text-on-surface-variant">${khach.khoaHocQuanTam}</td>
+                <td class="px-6 py-4 text-on-surface-variant">${khach.nguon}</td>
+                <td class="px-6 py-4">
+                    <span class="px-2.5 py-1 rounded-full text-xs font-medium ${mauTrangThaiKhach(khach.trangThai)}">
+                        ${khach.trangThai}
+                    </span>
+                </td>
+                <td class="px-6 py-4 text-right">
+                    <button class="px-3 py-2 rounded-lg border border-outline-variant text-xs font-medium text-on-surface-variant hover:bg-surface-container transition">
+                        Xem chi tiết
+                    </button>
+                </td>
+            `;
+
+            thanBangKhach.appendChild(hang);
+
+        });
+
+    }
+
+    // ================================================
+    // KHỞI TẠO
+    // ================================================
+
+    renderThongKe();
+    renderLichHen();
+    renderBangKhach();
+
+</script>
+
+
+<!-- ================================================= -->
+<!-- CHATBOT NỔI (GÓC DƯỚI BÊN PHẢI) -->
+<!-- ================================================= -->
+
+<div id="oChatbotPanel"
+     class="hidden fixed bottom-24 right-6 z-50 w-[360px] max-w-[92vw] h-[480px] max-h-[75vh] bg-white rounded-xl border border-outline-variant shadow-2xl flex flex-col overflow-hidden">
+
+    <div class="bg-primary text-white px-4 py-4 flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center">
+                <span class="material-symbols-outlined text-[20px]">smart_toy</span>
+            </div>
+            <div>
+                <div class="text-sm font-semibold">Trợ lý AI</div>
+                <div class="text-xs text-white/70">Luôn sẵn sàng hỗ trợ</div>
+            </div>
+        </div>
+        <button onclick="dongChatbot()"
+                class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 transition">
+            <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+    </div>
+
+    <div id="oChatMessages"
+         class="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-3 bg-surface">
+        <div class="flex items-start gap-2">
+            <div class="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-[16px]">smart_toy</span>
+            </div>
+            <div class="bg-white border border-outline-variant rounded-xl rounded-tl-none px-3 py-2 text-sm max-w-[80%]">
+                Xin chào! Tôi có thể giúp gì cho bạn hôm nay?
+            </div>
+        </div>
+    </div>
+
+    <form onsubmit="guiTinNhanChatbot(event)"
+          class="border-t border-surface-variant p-3 flex items-center gap-2 shrink-0 bg-white">
+        <input id="oChatInput"
+               type="text"
+               autocomplete="off"
+               placeholder="Nhập câu hỏi của bạn..."
+               class="flex-1 rounded-lg border border-outline-variant px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20">
+        <button type="submit"
+                class="w-10 h-10 shrink-0 rounded-lg bg-primary text-white flex items-center justify-center hover:opacity-90 transition">
+            <span class="material-symbols-outlined text-[20px]">send</span>
+        </button>
+    </form>
+
+</div>
+
+<button id="oChatbotToggle"
+        onclick="moChatbot()"
+        class="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-primary text-white shadow-xl flex items-center justify-center hover:opacity-90 transition">
+    <span class="material-symbols-outlined text-[26px]">
+        smart_toy
+    </span>
+</button>
+
+<script>
+
+    function moChatbot() {
+        document.getElementById("oChatbotPanel").classList.remove("hidden");
+        document.getElementById("oChatbotToggle").classList.add("hidden");
+        document.getElementById("oChatInput").focus();
+    }
+
+    function dongChatbot() {
+        document.getElementById("oChatbotPanel").classList.add("hidden");
+        document.getElementById("oChatbotToggle").classList.remove("hidden");
+    }
+
+    function themTinNhanChatbot(noiDung, nguoiGui) {
+
+        const oChatMessages = document.getElementById("oChatMessages");
+        const dong = document.createElement("div");
+
+        if (nguoiGui === "nguoiDung") {
+
+            dong.className = "flex items-start gap-2 justify-end";
+            dong.innerHTML = `
+                <div class="bg-primary text-white rounded-xl rounded-tr-none px-3 py-2 text-sm max-w-[80%]">
+                    ${noiDung}
+                </div>
+            `;
+
+        } else {
+
+            dong.className = "flex items-start gap-2";
+            dong.innerHTML = `
+                <div class="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-[16px]">smart_toy</span>
+                </div>
+                <div class="bg-white border border-outline-variant rounded-xl rounded-tl-none px-3 py-2 text-sm max-w-[80%]">
+                    ${noiDung}
+                </div>
+            `;
+
+        }
+
+        oChatMessages.appendChild(dong);
+        oChatMessages.scrollTop = oChatMessages.scrollHeight;
+
+    }
+
+    async function guiTinNhanChatbot(su) {
+
+        su.preventDefault();
+
+        const oChatInput = document.getElementById("oChatInput");
+        const noiDung = oChatInput.value.trim();
+
+        if (!noiDung) return;
+
+        themTinNhanChatbot(noiDung, "nguoiDung");
+        oChatInput.value = "";
+
+        try {
+            themTinNhanChatbot("Đang xử lý...", "bot");
+            const response = await fetch("/api/chatbot", { method: "POST", headers: { "Content-Type": "application/json" }, credentials: "same-origin", body: JSON.stringify({ message: noiDung }) });
+            const data = await response.json();
+            const messages = document.getElementById("oChatMessages");
+            if (messages.lastElementChild?.textContent.includes("Đang xử lý...")) messages.lastElementChild.remove();
+            themTinNhanChatbot(response.ok ? (data.answer || "AI không trả về câu trả lời.") : (data.message || "Có lỗi xảy ra khi kết nối với chatbot."), "bot");
+        } catch (error) {
+            console.error("Lỗi chatbot:", error);
+            themTinNhanChatbot("Không thể kết nối đến máy chủ chatbot.", "bot");
+        }
+
+    }
+
+</script>
+
+<script src="~/js/chatbot-history.js" asp-append-version="true"></script>
+</body>
+</html>

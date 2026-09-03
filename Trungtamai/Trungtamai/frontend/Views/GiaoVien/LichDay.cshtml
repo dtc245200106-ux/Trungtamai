@@ -1,0 +1,694 @@
+@model List<Trungtamai.Models.LopHoc>
+
+@{
+    Layout = null;
+
+    var hoTen = ViewBag.HoTen?.ToString() ?? "Giáo viên";
+    var canhBao = ViewBag.CanhBao?.ToString() ?? "";
+
+    // Các thứ trong tuần
+    var homNay = DateTime.Today;
+
+int soNgayTuThuHai =
+    homNay.DayOfWeek == DayOfWeek.Sunday
+        ? 6
+        : (int)homNay.DayOfWeek - 1;
+
+var ngayThuHai = homNay.AddDays(-soNgayTuThuHai);
+
+var cacThu = new[]
+{
+    new { Ma = "T2", Ten = "Thứ 2", Ngay = ngayThuHai },
+    new { Ma = "T3", Ten = "Thứ 3", Ngay = ngayThuHai.AddDays(1) },
+    new { Ma = "T4", Ten = "Thứ 4", Ngay = ngayThuHai.AddDays(2) },
+    new { Ma = "T5", Ten = "Thứ 5", Ngay = ngayThuHai.AddDays(3) },
+    new { Ma = "T6", Ten = "Thứ 6", Ngay = ngayThuHai.AddDays(4) },
+    new { Ma = "T7", Ten = "Thứ 7", Ngay = ngayThuHai.AddDays(5) },
+    new { Ma = "CN", Ten = "Chủ nhật", Ngay = ngayThuHai.AddDays(6) }
+};
+
+    // Các khung giờ hiển thị
+    var gioBatDau = new[]
+{
+    "07:00",
+    "07:30",
+    "08:00",
+    "08:30",
+    "09:00",
+    "09:30",
+    "10:00",
+    "10:30",
+    "11:00",
+    "11:30",
+
+    "13:00",
+    "13:30",
+    "14:00",
+    "14:30",
+    "15:00",
+    "15:30",
+    "16:00",
+    "16:30",
+    "17:00",
+    "17:30",
+    "18:00",
+    "18:30",
+    "19:00",
+    "19:30",
+    "20:00",
+    "20:30",
+    "21:00"
+};
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Lịch dạy - Giáo viên</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+          rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+          rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#091426",
+                        background: "#f8f9fb",
+                        surface: "#ffffff",
+                        "surface-container": "#eef0f2",
+                        "surface-container-low": "#f4f6f8",
+                        "surface-variant": "#e1e3e5",
+                        "outline-variant": "#c5c6cd",
+                        "on-surface": "#191c1e",
+                        "on-surface-variant": "#45474c",
+                        secondary: "#006a61",
+                        error: "#ba1a1a"
+                    },
+                    fontFamily: {
+                        sans: ["Inter"]
+                    },
+                    borderRadius: {
+                        lg: "0.5rem",
+                        xl: "0.75rem"
+                    }
+                }
+            }
+        };
+    </script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .sidebar-item {
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-item:hover {
+            background: #e6e8ea;
+        }
+
+        .sidebar-item.active {
+            background: #091426;
+            color: white;
+        }
+
+        .schedule-card {
+            transition: all 0.15s ease;
+        }
+
+        .schedule-card:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+        }
+    </style>
+</head>
+
+<body class="bg-background text-on-surface">
+
+<div class="min-h-screen flex">
+
+    <!-- SIDEBAR -->
+    <aside class="w-[250px] bg-white border-r border-outline-variant fixed left-0 top-0 bottom-0 flex flex-col">
+
+        <!-- LOGO -->
+        <div class="h-[80px] flex items-center px-6 border-b border-surface-variant">
+
+            <div class="w-10 h-10 rounded-lg bg-primary text-white flex items-center justify-center mr-3">
+                <span class="material-symbols-outlined"
+                      style="font-variation-settings:'FILL' 1">
+                    school
+                </span>
+            </div>
+
+            <div>
+                <div class="font-bold text-primary text-lg">
+                    LinguistAI
+                </div>
+
+                <div class="text-xs text-on-surface-variant">
+                    Giáo viên
+                </div>
+            </div>
+
+        </div>
+
+        <!-- MENU -->
+        <nav class="flex-1 px-3 py-5 space-y-1">
+
+            <a asp-controller="GiaoVien"
+               asp-action="Index"
+               class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-surface-variant">
+
+                <span class="material-symbols-outlined">
+                    dashboard
+                </span>
+
+                Tổng quan
+            </a>
+
+
+            <a asp-controller="GiaoVien"
+               asp-action="LopHocCuaToi"
+               class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-surface-variant">
+
+                <span class="material-symbols-outlined">
+                    groups
+                </span>
+
+                Lớp học của tôi
+            </a>
+
+
+            <a asp-controller="GiaoVien"
+               asp-action="LichDay"
+               class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium">
+
+                <span class="material-symbols-outlined">
+                    calendar_month
+                </span>
+
+                Lịch dạy
+            </a>
+
+
+           
+
+
+            <a asp-controller="GiaoVien" asp-action="DiemSoKetQua"
+   class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-surface-variant">
+    <span class="material-symbols-outlined">assessment</span>
+    Điểm số & Kết quả
+</a>
+
+
+            
+
+        </nav>
+
+
+        <!-- USER -->
+        <div class="border-t border-surface-variant p-4">
+
+            <div class="flex items-center gap-3">
+
+                <div class="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center font-semibold">
+
+                    @(hoTen.Length > 0
+                        ? hoTen.Substring(0, 1).ToUpper()
+                        : "G")
+
+                </div>
+
+                <div class="min-w-0">
+
+                    <div class="font-medium text-sm truncate">
+                        @hoTen
+                    </div>
+
+                    <div class="text-xs text-on-surface-variant">
+                        Giáo viên
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN -->
+    <main class="ml-[250px] flex-1 min-h-screen">
+
+        <!-- HEADER -->
+        <header class="h-[80px] bg-white border-b border-outline-variant flex items-center justify-between px-8 sticky top-0 z-10">
+
+            <div>
+
+                <h1 class="text-xl font-semibold text-primary">
+                    Lịch dạy
+                </h1>
+
+                <p class="text-sm text-on-surface-variant mt-1">
+                    Lịch giảng dạy các lớp bạn đang phụ trách
+                </p>
+
+            </div>
+
+
+            <a asp-controller="Account"
+               asp-action="Logout"
+               class="flex items-center gap-2 px-4 py-2 rounded-lg border border-outline-variant text-sm font-medium text-on-surface-variant hover:bg-surface-container">
+
+                <span class="material-symbols-outlined text-[20px]">
+                    logout
+                </span>
+
+                Đăng xuất
+
+            </a>
+
+        </header>
+
+
+        <div class="p-8">
+
+            <!-- CẢNH BÁO -->
+            @if (!string.IsNullOrEmpty(canhBao))
+            {
+                <div class="mb-6 flex items-center gap-3 p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-700">
+
+                    <span class="material-symbols-outlined">
+                        warning
+                    </span>
+
+                    <span>
+                        @canhBao
+                    </span>
+
+                </div>
+            }
+
+
+            <!-- THÔNG TIN -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
+
+                <div class="bg-white rounded-xl border border-outline-variant p-5">
+
+                    <div class="flex items-center gap-3">
+
+                        <div class="w-11 h-11 rounded-lg bg-surface-container flex items-center justify-center">
+
+                            <span class="material-symbols-outlined text-primary">
+                                groups
+                            </span>
+
+                        </div>
+
+                        <div>
+
+                            <div class="text-sm text-on-surface-variant">
+                                Lớp đang phụ trách
+                            </div>
+
+                            <div class="text-2xl font-semibold text-primary">
+                                @ViewBag.TongLop
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="bg-white rounded-xl border border-outline-variant p-5">
+
+                    <div class="flex items-center gap-3">
+
+                        <div class="w-11 h-11 rounded-lg bg-surface-container flex items-center justify-center">
+
+                            <span class="material-symbols-outlined text-primary">
+                                calendar_month
+                            </span>
+
+                        </div>
+
+                        <div>
+
+                            <div class="text-sm text-on-surface-variant">
+                                Lịch trong tuần
+                            </div>
+
+                            <div class="text-2xl font-semibold text-primary">
+                                @{
+                                    var soBuoi = 0;
+
+                                    foreach (var lop in Model)
+                                    {
+                                        if (!string.IsNullOrWhiteSpace(lop.NgayHoc))
+                                        {
+                                            soBuoi += lop.NgayHoc
+                                                .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                                                .Length;
+                                        }
+                                    }
+                                }
+
+                                @soBuoi buổi
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="bg-white rounded-xl border border-outline-variant p-5">
+
+                    <div class="flex items-center gap-3">
+
+                        <div class="w-11 h-11 rounded-lg bg-surface-container flex items-center justify-center">
+
+                            <span class="material-symbols-outlined text-primary">
+                                person
+                            </span>
+
+                        </div>
+
+                        <div>
+
+                            <div class="text-sm text-on-surface-variant">
+                                Giáo viên
+                            </div>
+
+                            <div class="text-lg font-semibold text-primary truncate">
+                                @hoTen
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- LỊCH -->
+            <div class="bg-white rounded-xl border border-outline-variant overflow-hidden">
+
+                <div class="p-5 border-b border-outline-variant">
+
+                    <div class="flex items-center gap-3">
+
+                        <span class="material-symbols-outlined text-primary">
+                            calendar_month
+                        </span>
+
+                        <div>
+
+                            <h2 class="font-semibold text-primary">
+                                Thời khóa biểu
+                            </h2>
+
+                            <p class="text-xs text-on-surface-variant mt-1">
+                                Lịch được lấy trực tiếp từ dữ liệu lớp học
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="overflow-x-auto">
+
+                    <div class="min-w-[1100px]">
+
+                        <!-- HEADER THỨ -->
+                        <div class="grid grid-cols-8 border-b border-outline-variant">
+
+                            <div class="p-4 bg-surface-container-low border-r border-outline-variant font-medium text-sm">
+                                Giờ
+                            </div>
+
+                            @foreach (var thu in cacThu)
+{
+    var laHomNay = thu.Ngay.Date == homNay.Date;
+
+    <div class="p-3 bg-surface-container-low border-r border-outline-variant text-center
+                @(laHomNay ? "bg-slate-100" : "")">
+
+        <div class="font-semibold text-sm text-primary">
+            @thu.Ten
+        </div>
+
+        <div class="text-xs text-on-surface-variant mt-1">
+            @thu.Ngay.ToString("dd/MM")
+        </div>
+
+        @if (laHomNay)
+        {
+            <div class="text-[10px] font-semibold text-emerald-600 mt-1">
+                HÔM NAY
+            </div>
+        }
+
+    </div>
+}
+
+                        </div>
+
+
+                        <!-- CÁC GIỜ -->
+                        <div class="grid grid-cols-8">
+
+    <!-- CỘT GIỜ -->
+    <div class="border-r border-outline-variant">
+
+        @for (int i = 7; i <= 21; i++)
+        {
+            <div class="h-[60px] border-b border-outline-variant p-2 bg-surface-container-low">
+
+                <span class="text-xs font-medium text-on-surface-variant">
+                    @i.ToString("00"):00
+                </span>
+
+            </div>
+        }
+
+    </div>
+
+
+    <!-- TỪNG NGÀY -->
+    @foreach (var thu in cacThu)
+    {
+        <div class="relative border-r border-outline-variant">
+
+            <!-- đường giờ -->
+            @for (int i = 7; i <= 21; i++)
+            {
+                <div class="h-[60px] border-b border-outline-variant"></div>
+            }
+
+
+            @{
+                var lopCuaThu = Model
+                    .Where(lop =>
+                        !string.IsNullOrWhiteSpace(lop.NgayHoc)
+                        &&
+                        lop.NgayHoc
+                            .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                            .Any(x => x.Trim() == thu.Ma)
+                    )
+                    .ToList();
+            }
+
+
+            
+
+
+            @foreach (var lop in lopCuaThu)
+            {
+                TimeSpan batDau;
+                TimeSpan ketThuc;
+
+                if (!TimeSpan.TryParse(lop.GioBatDau, out batDau))
+                {
+                    continue;
+                }
+
+                if (!TimeSpan.TryParse(lop.GioKetThuc, out ketThuc))
+                {
+                    continue;
+                }
+
+                var mocBatDau = new TimeSpan(7, 0, 0);
+
+                var top =
+    (batDau - mocBatDau).TotalMinutes;
+
+var height =
+    Math.Max(
+        (ketThuc - batDau).TotalMinutes,
+        30
+    );
+
+// 60px tương ứng 60 phút
+// nên 1 phút = 1px
+
+                <div class="schedule-card absolute left-1 right-1 bg-primary text-white rounded-lg p-2 overflow-hidden"
+                     style="top:@(top)px; height:@(height)px;">
+
+                    <div class="font-semibold text-xs">
+                        @lop.TenLop
+                    </div>
+
+                    <div class="text-[10px] mt-1 opacity-90">
+                        @lop.GioBatDau - @lop.GioKetThuc
+                    </div>
+
+                    <div class="text-[10px] opacity-90">
+                        @lop.PhongHoc
+                    </div>
+
+                    <div class="text-[10px] opacity-75">
+                        @lop.MaLop
+                    </div>
+
+                </div>
+            }
+
+        </div>
+    }
+
+</div>
+
+                    </div>
+
+                </div>
+
+            </div>
+</div>
+
+        </div>
+
+    </main>
+
+</div>
+<!-- CHATBOT -->
+<div id="oChatbotPanel"
+     class="hidden fixed bottom-24 right-6 z-50 w-[360px] max-w-[92vw] h-[480px] max-h-[75vh] bg-white rounded-xl border border-outline-variant shadow-2xl flex flex-col overflow-hidden">
+    <div class="bg-primary text-white px-4 py-4 flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center">
+                <span class="material-symbols-outlined text-[20px]">smart_toy</span>
+            </div>
+            <div>
+                <div class="text-sm font-semibold">Trợ lý AI</div>
+                <div class="text-xs text-white/70">Luôn sẵn sàng hỗ trợ</div>
+            </div>
+        </div>
+        <button onclick="dongChatbot()" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 transition">
+            <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+    </div>
+
+    <div id="oChatMessages" class="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-3 bg-surface">
+        <div class="flex items-start gap-2">
+            <div class="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-[16px]">smart_toy</span>
+            </div>
+            <div class="bg-white border border-outline-variant rounded-xl rounded-tl-none px-3 py-2 text-sm max-w-[80%]">
+                Xin chào! Tôi có thể giúp gì cho bạn hôm nay?
+            </div>
+        </div>
+    </div>
+
+    <form onsubmit="guiTinNhanChatbot(event)" class="border-t border-surface-variant p-3 flex items-center gap-2 shrink-0 bg-white">
+        <input id="oChatInput" type="text" autocomplete="off" placeholder="Nhập câu hỏi của bạn..."
+               class="flex-1 rounded-lg border border-outline-variant px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20">
+        <button type="submit" class="w-10 h-10 shrink-0 rounded-lg bg-primary text-white flex items-center justify-center hover:opacity-90 transition">
+            <span class="material-symbols-outlined text-[20px]">send</span>
+        </button>
+    </form>
+</div>
+
+<button id="oChatbotToggle" onclick="moChatbot()"
+        class="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-primary text-white shadow-xl flex items-center justify-center hover:opacity-90 transition">
+    <span class="material-symbols-outlined text-[26px]">smart_toy</span>
+</button>
+
+<script>
+    function moChatbot() {
+        document.getElementById("oChatbotPanel").classList.remove("hidden");
+        document.getElementById("oChatbotToggle").classList.add("hidden");
+        document.getElementById("oChatInput").focus();
+    }
+    function dongChatbot() {
+        document.getElementById("oChatbotPanel").classList.add("hidden");
+        document.getElementById("oChatbotToggle").classList.remove("hidden");
+    }
+    function themTinNhanChatbot(noiDung, nguoiGui) {
+        const oChatMessages = document.getElementById("oChatMessages");
+        const dong = document.createElement("div");
+        if (nguoiGui === "nguoiDung") {
+            dong.className = "flex items-start gap-2 justify-end";
+            dong.innerHTML = `<div class="bg-primary text-white rounded-xl rounded-tr-none px-3 py-2 text-sm max-w-[80%]">${noiDung}</div>`;
+        } else {
+            dong.className = "flex items-start gap-2";
+            dong.innerHTML = `
+                <div class="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-[16px]">smart_toy</span>
+                </div>
+                <div class="bg-white border border-outline-variant rounded-xl rounded-tl-none px-3 py-2 text-sm max-w-[80%]">${noiDung}</div>`;
+        }
+        oChatMessages.appendChild(dong);
+        oChatMessages.scrollTop = oChatMessages.scrollHeight;
+    }
+    async function guiTinNhanChatbot(su) {
+        su.preventDefault();
+        const oChatInput = document.getElementById("oChatInput");
+        const noiDung = oChatInput.value.trim();
+        if (!noiDung) return;
+        themTinNhanChatbot(noiDung, "nguoiDung");
+        oChatInput.value = "";
+        try {
+            themTinNhanChatbot("Đang xử lý...", "bot");
+            const response = await fetch("/api/chatbot", { method: "POST", headers: { "Content-Type": "application/json" }, credentials: "same-origin", body: JSON.stringify({ message: noiDung }) });
+            const data = await response.json();
+            const messages = document.getElementById("oChatMessages");
+            if (messages.lastElementChild?.textContent.includes("Đang xử lý...")) messages.lastElementChild.remove();
+            themTinNhanChatbot(response.ok ? (data.answer || "AI không trả về câu trả lời.") : (data.message || "Có lỗi xảy ra khi kết nối với chatbot."), "bot");
+        } catch (error) {
+            console.error("Lỗi chatbot:", error);
+            themTinNhanChatbot("Không thể kết nối đến máy chủ chatbot.", "bot");
+        }
+    }
+</script>
+<script src="~/js/chatbot-history.js" asp-append-version="true"></script>
+</body>
+</html>

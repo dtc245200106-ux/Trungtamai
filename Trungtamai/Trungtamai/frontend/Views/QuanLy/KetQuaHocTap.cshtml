@@ -1,0 +1,358 @@
+@{
+    Layout = null;
+    var hoTen = ViewBag.HoTen ?? "Quản lý";
+    var danhSach = Model as List<Trungtamai.Models.DiemSo> ?? new List<Trungtamai.Models.DiemSo>();
+    var danhSachLop = ViewBag.DanhSachLop as List<string> ?? new List<string>();
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kết quả học tập - LinguistAI</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:FILL@0..1" rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#091426",
+                        "primary-container": "#1e293b",
+                        "on-primary": "#ffffff",
+                        background: "#f7f9fb",
+                        surface: "#f7f9fb",
+                        "surface-container-low": "#f2f4f6",
+                        "surface-container": "#eceef0",
+                        "surface-container-high": "#e6e8ea",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-variant": "#e0e3e5",
+                        "outline-variant": "#c5c6cd",
+                        "on-surface": "#191c1e",
+                        "on-surface-variant": "#45474c",
+                        secondary: "#006a61",
+                        error: "#ba1a1a"
+                    },
+                    fontFamily: {
+                        sans: ["Inter"]
+                    },
+                    borderRadius: {
+                        lg: "0.5rem",
+                        xl: "0.75rem"
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; }
+        .sidebar-item { transition: all 0.2s ease; }
+        .sidebar-item:hover { background: #e6e8ea; }
+        .sidebar-item.active { background: #091426; color: white; }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+    <div class="min-h-screen flex">
+        <!-- Sidebar -->
+        <aside class="w-[250px] bg-white border-r border-outline-variant fixed left-0 top-0 bottom-0 flex flex-col">
+            <div class="h-[80px] flex items-center px-6 border-b border-surface-variant">
+                <div class="w-10 h-10 rounded-lg bg-primary text-white flex items-center justify-center mr-3">
+                    <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1">school</span>
+                </div>
+                <div>
+                    <div class="font-bold text-primary text-lg">LinguistAI</div>
+                    <div class="text-xs text-on-surface-variant">Quản lý trung tâm</div>
+                </div>
+            </div>
+
+            <nav class="flex-1 px-3 py-5 space-y-1">
+                <a asp-controller="QuanLy" asp-action="Index" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-surface-variant">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    Tổng quan
+                </a>
+                <a asp-controller="QuanLy" asp-action="HocVien" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-surface-variant">
+                    <span class="material-symbols-outlined">group</span>
+                    Học viên
+                </a>
+                <a asp-controller="QuanLy" asp-action="GiaoVien" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-surface-variant">
+                    <span class="material-symbols-outlined">person</span>
+                    Giáo viên
+                </a>
+                <a asp-controller="QuanLy" asp-action="KhoaHoc" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-surface-variant">
+                    <span class="material-symbols-outlined">menu_book</span>
+                    Khóa học
+                </a>
+                <a asp-controller="QuanLy" asp-action="LopHoc" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-surface-variant">
+                    <span class="material-symbols-outlined">groups</span>
+                    Lớp học
+                </a>
+                <a asp-controller="QuanLy" asp-action="LichHoc" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-surface-variant">
+                    <span class="material-symbols-outlined">calendar_month</span>
+                    Lịch học
+                </a>
+                <a asp-controller="QuanLy" asp-action="HocPhi" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-surface-variant">
+                    <span class="material-symbols-outlined">payments</span>
+                    Học phí
+                </a>
+                <a asp-controller="QuanLy" asp-action="KetQuaHocTap" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium">
+                    <span class="material-symbols-outlined">assessment</span>
+                    Kết quả học tập
+                </a>
+                <a asp-controller="QuanLy" asp-action="ThongKe" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-surface-variant">
+                    <span class="material-symbols-outlined">bar_chart</span>
+                    Thống kê
+                </a>
+            </nav>
+
+            <div class="border-t border-surface-variant p-4">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center font-semibold">
+                        @(hoTen.ToString().Substring(0, 1).ToUpper())
+                    </div>
+                    <div class="min-w-0">
+                        <div class="font-medium text-sm truncate">@hoTen</div>
+                        <div class="text-xs text-on-surface-variant">Quản lý</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main content -->
+        <main class="ml-[250px] flex-1 min-h-screen">
+            <header class="h-[80px] bg-white border-b border-outline-variant flex items-center justify-between px-8 sticky top-0 z-10">
+                <div>
+                    <h1 class="text-2xl font-bold text-primary">Kết quả học tập</h1>
+                    <p class="text-sm text-on-surface-variant mt-0.5">Theo dõi tiến độ và điểm số học viên</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <a asp-controller="Account" asp-action="Logout"
+                       class="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-outline-variant text-sm font-medium text-on-surface-variant hover:bg-surface-container transition">
+                        <span class="material-symbols-outlined text-[20px]">logout</span>
+                        Đăng xuất
+                    </a>
+                </div>
+            </header>
+
+            <div class="p-8">
+                <!-- 4 thẻ thống kê -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-8">
+                    <div class="bg-white rounded-xl border border-outline-variant p-5">
+                        <div class="text-sm text-on-surface-variant">Tổng học viên</div>
+                        <div class="text-3xl font-semibold text-primary mt-2">@ViewBag.Tong</div>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl border border-outline-variant p-5">
+                        <div class="text-sm text-on-surface-variant">Học viên đạt</div>
+                        <div class="text-3xl font-semibold text-green-600 mt-2">
+                            @ViewBag.Dat
+                            <span class="text-base text-on-surface-variant">(@ViewBag.TyLeDat%)</span>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl border border-outline-variant p-5">
+                        <div class="text-sm text-on-surface-variant">Không đạt</div>
+                        <div class="text-3xl font-semibold text-red-600 mt-2">@ViewBag.KhongDat / @ViewBag.ChuaThi</div>
+                    </div>
+                </div>
+
+                <!-- Form lọc + tìm kiếm -->
+                <form method="get" asp-action="KetQuaHocTap"
+                      class="bg-white rounded-xl border border-outline-variant p-5 mb-6 flex flex-wrap gap-4 items-end">
+                    <div class="flex-1 min-w-[200px]">
+                        <label class="text-sm text-on-surface-variant mb-1 block">Tìm kiếm</label>
+                        <input type="text" name="tuKhoa" value="@ViewBag.TuKhoa"
+                               placeholder="Tên hoặc mã học viên..."
+                               class="w-full rounded-lg border border-outline-variant px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" />
+                    </div>
+                    <div class="w-[180px]">
+                        <label class="text-sm text-on-surface-variant mb-1 block">Lớp</label>
+                        <select name="lop" class="w-full rounded-lg border border-outline-variant px-3 py-2 text-sm">
+                            <option value="Tất cả">Tất cả lớp</option>
+                            @foreach (var l in danhSachLop)
+                            {
+                                <option value="@l" selected="@(ViewBag.Lop?.ToString() == l)">@l</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="w-[160px]">
+                        <label class="text-sm text-on-surface-variant mb-1 block">Kết quả</label>
+                        <select name="ketQua" class="w-full rounded-lg border border-outline-variant px-3 py-2 text-sm">
+                            <option value="Tất cả">Tất cả</option>
+                            <option value="Đạt" selected="@(ViewBag.KetQua?.ToString() == "Đạt")">Đạt</option>
+                            <option value="Không đạt" selected="@(ViewBag.KetQua?.ToString() == "Không đạt")">Không đạt</option>
+                            <option value="Chưa thi" selected="@(ViewBag.KetQua?.ToString() == "Chưa thi")">Chưa thi</option>
+                        </select>
+                    </div>
+                    <button type="submit"
+                            class="px-5 py-2.5 rounded-lg bg-primary text-white text-sm font-medium hover:opacity-90 transition">
+                        Lọc
+                    </button>
+                    
+                </form>
+
+                <!-- Bảng kết quả -->
+                <div class="bg-white rounded-xl border border-outline-variant overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-left text-sm">
+                            <thead class="bg-surface-container-low text-on-surface-variant">
+                                <tr>
+                                    <th class="px-6 py-4 font-medium">Mã HV</th>
+                                    <th class="px-6 py-4 font-medium">Họ tên</th>
+                                    <th class="px-6 py-4 font-medium">Lớp</th>
+                                    <th class="px-6 py-4 font-medium text-center">KT1</th>
+                                    <th class="px-6 py-4 font-medium text-center">KT2</th>
+                                    <th class="px-6 py-4 font-medium text-center">KT3</th>
+                                    <th class="px-6 py-4 font-medium text-center">KT lớn</th>
+                                    <th class="px-6 py-4 font-medium text-center">TB</th>
+                                    <th class="px-6 py-4 font-medium text-center">Kết quả</th>
+                                    <th class="px-6 py-4 font-medium">GV nhập</th>
+                                    <th class="px-6 py-4 font-medium">Ngày cập nhật</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (danhSach.Count == 0)
+                                {
+                                    <tr>
+                                        <td colspan="11" class="px-6 py-10 text-center text-on-surface-variant">
+                                            Không có dữ liệu điểm số.
+                                        </td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    foreach (var item in danhSach)
+                                    {
+                                        <tr class="border-t border-outline-variant hover:bg-surface-container-low">
+                                            <td class="px-6 py-4">@item.MaHocVien</td>
+                                            <td class="px-6 py-4 font-medium">@item.HoTenHocVien</td>
+                                            <td class="px-6 py-4">@item.MaLop</td>
+                                            <td class="px-6 py-4 text-center">@(item.DiemKT1?.ToString("0.0") ?? "-")</td>
+                                            <td class="px-6 py-4 text-center">@(item.DiemKT2?.ToString("0.0") ?? "-")</td>
+                                            <td class="px-6 py-4 text-center">@(item.DiemKT3?.ToString("0.0") ?? "-")</td>
+                                            <td class="px-6 py-4 text-center">@(item.DiemKiemTraLon?.ToString("0.0") ?? "-")</td>
+                                            <td class="px-6 py-4 text-center font-semibold text-primary">
+                                                @(item.DiemTrungBinh?.ToString("0.0") ?? "-")
+                                            </td>
+                                            <td class="px-6 py-4 text-center">
+                                                @if (item.KetQua == "Đạt")
+                                                {
+                                                    <span class="inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">Đạt</span>
+                                                }
+                                                else if (item.KetQua == "Không đạt")
+                                                {
+                                                    <span class="inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">Không đạt</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">Chưa thi</span>
+                                                }
+                                            </td>
+                                            <td class="px-6 py-4">@item.GiaoVienNhap</td>
+                                            <td class="px-6 py-4">@item.NgayCapNhat.ToString("dd/MM/yyyy")</td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Chatbot (giữ nguyên nếu bạn đang dùng) -->
+    <div id="oChatbotPanel"
+         class="hidden fixed bottom-24 right-6 z-[99999] w-[360px] max-w-[92vw] h-[480px] max-h-[75vh] bg-white rounded-xl border border-outline-variant shadow-2xl flex flex-col overflow-hidden">
+        <div class="bg-primary text-white px-4 py-4 flex items-center justify-between shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[20px]">smart_toy</span>
+                </div>
+                <div>
+                    <div class="text-sm font-semibold">Trợ lý AI</div>
+                    <div class="text-xs text-white/70">Luôn sẵn sàng hỗ trợ</div>
+                </div>
+            </div>
+            <button onclick="dongChatbot()"
+                    class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 transition">
+                <span class="material-symbols-outlined text-[20px]">close</span>
+            </button>
+        </div>
+        <div id="oChatMessages" class="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-3 bg-surface">
+            <div class="flex items-start gap-2">
+                <div class="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-[16px]">smart_toy</span>
+                </div>
+                <div class="bg-white border border-outline-variant rounded-xl rounded-tl-none px-3 py-2 text-sm max-w-[80%]">
+                    Xin chào! Tôi có thể giúp gì cho bạn hôm nay?
+                </div>
+            </div>
+        </div>
+        <form onsubmit="guiTinNhanChatbot(event)"
+              class="border-t border-surface-variant p-3 flex items-center gap-2 shrink-0 bg-white">
+            <input id="oChatInput" type="text" autocomplete="off" placeholder="Nhập câu hỏi của bạn..."
+                   class="flex-1 rounded-lg border border-outline-variant px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20">
+            <button type="submit"
+                    class="w-10 h-10 shrink-0 rounded-lg bg-primary text-white flex items-center justify-center hover:opacity-90 transition">
+                <span class="material-symbols-outlined text-[20px]">send</span>
+            </button>
+        </form>
+    </div>
+
+    <button id="oChatbotToggle" onclick="moChatbot()"
+            class="fixed bottom-6 right-6 z-[99999] w-14 h-14 rounded-full bg-primary text-white shadow-xl flex items-center justify-center hover:opacity-90 transition">
+        <span class="material-symbols-outlined text-[26px]">smart_toy</span>
+    </button>
+
+    <script>
+        function moChatbot() {
+            document.getElementById("oChatbotPanel").classList.remove("hidden");
+            document.getElementById("oChatbotToggle").classList.add("hidden");
+            document.getElementById("oChatInput").focus();
+        }
+        function dongChatbot() {
+            document.getElementById("oChatbotPanel").classList.add("hidden");
+            document.getElementById("oChatbotToggle").classList.remove("hidden");
+        }
+        function themTinNhanChatbot(noiDung, nguoiGui) {
+            const oChatMessages = document.getElementById("oChatMessages");
+            const dong = document.createElement("div");
+            if (nguoiGui === "nguoiDung") {
+                dong.className = "flex items-start gap-2 justify-end";
+                dong.innerHTML = `<div class="bg-primary text-white rounded-xl rounded-tr-none px-3 py-2 text-sm max-w-[80%]">${noiDung}</div>`;
+            } else {
+                dong.className = "flex items-start gap-2";
+                dong.innerHTML = `
+                    <div class="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center shrink-0">
+                        <span class="material-symbols-outlined text-[16px]">smart_toy</span>
+                    </div>
+                    <div class="bg-white border border-outline-variant rounded-xl rounded-tl-none px-3 py-2 text-sm max-w-[80%]">${noiDung}</div>`;
+            }
+            oChatMessages.appendChild(dong);
+            oChatMessages.scrollTop = oChatMessages.scrollHeight;
+        }
+        async function guiTinNhanChatbot(su) {
+            su.preventDefault();
+            const oChatInput = document.getElementById("oChatInput");
+            const noiDung = oChatInput.value.trim();
+            if (!noiDung) return;
+            themTinNhanChatbot(noiDung, "nguoiDung");
+            oChatInput.value = "";
+            try {
+                themTinNhanChatbot("Đang xử lý...", "bot");
+                const response = await fetch("/api/chatbot", { method: "POST", headers: { "Content-Type": "application/json" }, credentials: "same-origin", body: JSON.stringify({ message: noiDung }) });
+                const data = await response.json();
+                const messages = document.getElementById("oChatMessages");
+                if (messages.lastElementChild?.textContent.includes("Đang xử lý...")) messages.lastElementChild.remove();
+                themTinNhanChatbot(response.ok ? (data.answer || "AI không trả về câu trả lời.") : (data.message || "Có lỗi xảy ra khi kết nối với chatbot."), "bot");
+            } catch (error) {
+                console.error("Lỗi chatbot:", error);
+                themTinNhanChatbot("Không thể kết nối đến máy chủ chatbot.", "bot");
+            }
+        }
+    </script>
+<script src="~/js/chatbot-history.js" asp-append-version="true"></script>
+</body>
+</html>

@@ -1,0 +1,1137 @@
+@{
+
+    Layout = null;
+
+    var hoTen = ViewBag.HoTen ?? "Quản lý";
+
+}
+
+<!DOCTYPE html>
+
+<html lang="vi">
+
+<head>
+
+    <meta charset="utf-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Khóa học - LinguistAI</title>
+
+    <!-- Tailwind -->
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <!-- Inter -->
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+          rel="stylesheet">
+
+    <!-- Material Symbols -->
+
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:FILL@0..1"
+          rel="stylesheet">
+
+    <script>
+
+        tailwind.config = {
+
+            theme: {
+
+                extend: {
+
+                    colors: {
+
+                        primary: "#091426",
+
+                        "primary-container": "#1e293b",
+
+                        "on-primary": "#ffffff",
+
+                        background: "#f7f9fb",
+
+                        surface: "#f7f9fb",
+
+                        "surface-container-low": "#f2f4f6",
+
+                        "surface-container": "#eceef0",
+
+                        "surface-container-high": "#e6e8ea",
+
+                        "surface-container-lowest": "#ffffff",
+
+                        "surface-variant": "#e0e3e5",
+
+                        "outline-variant": "#c5c6cd",
+
+                        "on-surface": "#191c1e",
+
+                        "on-surface-variant": "#45474c",
+
+                        secondary: "#006a61",
+
+                        error: "#ba1a1a"
+
+                    },
+
+                    fontFamily: {
+
+                        sans: ["Inter"]
+
+                    },
+
+                    borderRadius: {
+
+                        lg: "0.5rem",
+
+                        xl: "0.75rem"
+
+                    }
+
+                }
+
+            }
+
+        };
+
+    </script>
+
+    <style>
+
+        * {
+
+            box-sizing: border-box;
+
+        }
+
+        body {
+
+            font-family: 'Inter', sans-serif;
+
+        }
+
+        .sidebar-item {
+
+            transition: all 0.2s ease;
+
+        }
+
+        .sidebar-item:hover {
+
+            background: #e6e8ea;
+
+        }
+
+        .sidebar-item.active {
+
+            background: #091426;
+
+            color: white;
+
+        }
+
+        .stat-card {
+
+            transition: all 0.2s ease;
+
+        }
+
+        .stat-card:hover {
+
+            transform: translateY(-2px);
+
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+
+        }
+
+        .table-row {
+
+            transition: background 0.15s ease;
+
+        }
+
+        .table-row:hover {
+
+            background: #f7f9fb;
+
+        }
+
+        .modal-backdrop {
+
+            background: rgba(9, 20, 38, 0.5);
+
+        }
+
+        dialog::backdrop {
+
+            display: none;
+
+        }
+
+    </style>
+
+</head>
+
+<body class="bg-background text-on-surface">
+
+<div class="min-h-screen flex">
+
+    <!-- ================================================= -->
+    <!-- SIDEBAR -->
+    <!-- ================================================= -->
+
+    <aside class="w-[250px] bg-white border-r border-outline-variant fixed left-0 top-0 bottom-0 flex flex-col">
+
+        <!-- LOGO -->
+
+        <div class="h-[80px] flex items-center px-6 border-b border-surface-variant">
+
+            <div class="w-10 h-10 rounded-lg bg-primary text-white flex items-center justify-center mr-3">
+
+                <span class="material-symbols-outlined"
+                      style="font-variation-settings:'FILL' 1">
+                    school
+                </span>
+
+            </div>
+
+            <div>
+
+                <div class="font-bold text-primary text-lg">
+                    LinguistAI
+                </div>
+
+                <div class="text-xs text-on-surface-variant">
+                    Quản lý trung tâm
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- MENU -->
+
+        <nav class="flex-1 px-3 py-5 space-y-1">
+            <a asp-controller="QuanLy" asp-action="Index" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-surface-variant">
+                <span class="material-symbols-outlined">dashboard</span>
+                Tổng quan
+            </a>
+
+            <a asp-controller="QuanLy" asp-action="HocVien" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-surface-variant">
+                <span class="material-symbols-outlined">group</span>
+                Học viên
+            </a>
+
+            <a asp-controller="QuanLy" asp-action="GiaoVien" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-surface-variant">
+                <span class="material-symbols-outlined">person</span>
+                Giáo viên
+            </a>
+
+            <a asp-controller="QuanLy" asp-action="KhoaHoc" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium">
+                <span class="material-symbols-outlined">menu_book</span>
+                Khóa học
+            </a>
+
+            <a asp-controller="QuanLy" asp-action="LopHoc" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-surface-variant">
+                <span class="material-symbols-outlined">groups</span>
+                Lớp học
+            </a>
+
+            <a asp-controller="QuanLy" asp-action="LichHoc" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-surface-variant">
+                <span class="material-symbols-outlined">calendar_month</span>
+                Lịch học
+            </a>
+
+            <a asp-controller="QuanLy" asp-action="HocPhi" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-surface-variant">
+                <span class="material-symbols-outlined">payments</span>
+                Học phí
+            </a>
+
+            <a asp-controller="QuanLy" asp-action="KetQuaHocTap" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-surface-variant">
+                <span class="material-symbols-outlined">assessment</span>
+                Kết quả học tập
+            </a>
+
+            <a asp-controller="QuanLy" asp-action="ThongKe" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-surface-variant">
+                <span class="material-symbols-outlined">bar_chart</span>
+                Thống kê
+            </a>
+        </nav>
+
+        <!-- USER / LOGOUT -->
+
+        <div class="border-t border-surface-variant p-4">
+
+            <div class="flex items-center gap-3 mb-3">
+
+                <div class="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center font-semibold">
+                    @(hoTen.ToString().Substring(0, 1).ToUpper())
+                </div>
+
+                <div class="min-w-0">
+
+                    <div class="font-medium text-sm truncate">
+                        @hoTen
+                    </div>
+
+                    <div class="text-xs text-on-surface-variant">
+                        Quản lý
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </aside>
+
+    <!-- ================================================= -->
+    <!-- MAIN -->
+    <!-- ================================================= -->
+
+    <main class="ml-[250px] flex-1 min-h-screen">
+
+        <!-- TOPBAR -->
+
+        <header class="h-[80px] bg-white border-b border-outline-variant flex items-center justify-between px-8">
+
+            <div>
+                <h1 class="text-xl font-semibold text-primary">
+                    Khóa học
+                </h1>
+                <p class="text-sm text-on-surface-variant mt-1">
+                    Quản lý danh sách khóa học của trung tâm
+                </p>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <a asp-controller="Account"
+                   asp-action="Logout"
+                   class="flex items-center gap-2 px-4 py-2 rounded-lg border border-outline-variant text-sm font-medium text-on-surface-variant hover:bg-surface-container transition">
+                    <span class="material-symbols-outlined text-[20px]">
+                        logout
+                    </span>
+                    Đăng xuất
+                </a>
+            </div>
+
+        </header>
+
+        <!-- CONTENT -->
+
+        <div class="p-8">
+
+            <!-- ================================================= -->
+            <!-- STATISTICS -->
+            <!-- ================================================= -->
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 mb-8">
+
+                <div class="stat-card bg-white rounded-xl border border-outline-variant p-5">
+                    <div class="flex items-center justify-between">
+                        <div class="w-11 h-11 rounded-lg bg-surface-container flex items-center justify-center">
+                            <span class="material-symbols-outlined text-primary">
+                                menu_book
+                            </span>
+                        </div>
+                    </div>
+                    <div class="mt-5">
+                        <div class="text-sm text-on-surface-variant">
+                            Tổng khóa học
+                        </div>
+                        <div id="statTong" class="text-3xl font-semibold text-primary mt-1">
+                            0
+                        </div>
+                    </div>
+                </div>
+
+                
+
+
+            </div>
+
+            <!-- ================================================= -->
+            <!-- TOOLBAR -->
+            <!-- ================================================= -->
+
+            <div class="bg-white rounded-xl border border-outline-variant">
+
+                <div class="p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-surface-variant">
+
+                    <div>
+                        <h3 class="font-semibold text-primary">
+                            Danh sách khóa học
+                        </h3>
+                        <p class="text-sm text-on-surface-variant mt-1">
+                            Toàn bộ khóa học hiện có tại trung tâm
+                        </p>
+                    </div>
+
+                    <button onclick="moModalThem()"
+                            class="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-white text-sm font-medium hover:opacity-90 transition">
+                        <span class="material-symbols-outlined text-[20px]">
+                            add
+                        </span>
+                        Thêm khóa học
+                    </button>
+
+                </div>
+
+                <!-- FILTERS -->
+
+                <div class="p-6 border-b border-surface-variant flex flex-col md:flex-row gap-3">
+
+                    <div class="relative flex-1">
+                        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">
+                            search
+                        </span>
+                        <input id="oTimKiem"
+                               type="text"
+                               oninput="renderBang()"
+                               placeholder="Tìm theo tên hoặc mã khóa học..."
+                               class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-outline-variant bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/20">
+                    </div>
+
+                    <select id="oNgonNgu"
+                            onchange="renderBang()"
+                            class="rounded-lg border border-outline-variant bg-white text-sm px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary/20">
+                        <option value="">Tất cả ngôn ngữ</option>
+                        <option value="Tiếng Anh">Tiếng Anh</option>
+                        <option value="Tiếng Trung">Tiếng Trung</option>
+                        <option value="Tiếng Nhật">Tiếng Nhật</option>
+                        <option value="Tiếng Hàn">Tiếng Hàn</option>
+                    </select>
+
+
+                </div>
+
+                <!-- TABLE -->
+
+                <div class="overflow-x-auto">
+
+                    <table class="w-full text-sm">
+
+                        <thead>
+                            <tr class="border-b border-surface-variant text-left">
+                                <th class="px-6 py-4 font-medium text-on-surface-variant">Mã KH</th>
+<th class="px-6 py-4 font-medium text-on-surface-variant">Tên khóa học</th>
+<th class="px-6 py-4 font-medium text-on-surface-variant">Ngôn ngữ</th>
+<th class="px-6 py-4 font-medium text-on-surface-variant">Số buổi</th>
+<th class="px-6 py-4 font-medium text-on-surface-variant">Học phí</th>
+<th class="px-6 py-4 font-medium text-on-surface-variant">Mô tả</th>
+<th class="px-6 py-4 font-medium text-on-surface-variant text-right">Thao tác</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="thanBang">
+                        </tbody>
+
+                    </table>
+
+                    <div id="oRong"
+                         class="hidden px-6 py-14 text-center text-on-surface-variant">
+                        <span class="material-symbols-outlined text-4xl text-outline-variant">
+                            search_off
+                        </span>
+                        <div class="mt-2 text-sm">
+                            Không tìm thấy khóa học phù hợp
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+<!-- ================================================= -->
+<!-- MODAL THÊM / SỬA KHÓA HỌC -->
+<!-- ================================================= -->
+
+<div id="oModalKhoaHoc"
+     class="hidden fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-4">
+
+    <div class="bg-white rounded-xl w-full max-w-[560px] max-h-[90vh] overflow-y-auto">
+
+        <div class="flex items-center justify-between p-6 border-b border-surface-variant">
+            <h3 id="oTieuDeModal" class="text-lg font-semibold text-primary">
+                Thêm khóa học
+            </h3>
+            <button onclick="dongModal()"
+                    class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container transition">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+
+        <form id="oFormKhoaHoc" onsubmit="luuKhoaHoc(event)" class="p-6 flex flex-col gap-4">
+
+            <input type="hidden" id="fId">
+
+            <div class="flex flex-col gap-1">
+                <label class="text-sm font-medium text-on-surface">Tên khóa học</label>
+                <input id="fTen" required
+                       placeholder="VD: Tiếng Anh giao tiếp cơ bản"
+                       class="rounded-lg border border-outline-variant px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20">
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+
+    <div class="flex flex-col gap-1">
+        <label class="text-sm font-medium text-on-surface">
+            Ngôn ngữ
+        </label>
+
+        <select id="fNgonNgu" required
+                class="rounded-lg border border-outline-variant px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20">
+
+            <option value="Tiếng Anh">Tiếng Anh</option>
+            <option value="Tiếng Trung">Tiếng Trung</option>
+            <option value="Tiếng Nhật">Tiếng Nhật</option>
+            <option value="Tiếng Hàn">Tiếng Hàn</option>
+
+        </select>
+    </div>
+
+
+    <div class="flex flex-col gap-1">
+        <label class="text-sm font-medium text-on-surface">
+            Số buổi học
+        </label>
+
+        <input id="fSoBuoi"
+               type="number"
+               min="1"
+               required
+               placeholder="VD: 24"
+               class="rounded-lg border border-outline-variant px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20">
+    </div>
+
+</div>
+
+            <div class="flex flex-col gap-1">
+                <label class="text-sm font-medium text-on-surface">Học phí (₫)</label>
+                <input id="fHocPhi" type="number" min="0" required
+                       placeholder="VD: 3500000"
+                       class="rounded-lg border border-outline-variant px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20">
+            </div>
+
+
+            <div class="flex flex-col gap-1">
+                <label class="text-sm font-medium text-on-surface">Mô tả</label>
+                <textarea id="fMoTa" rows="3"
+                          placeholder="Mô tả ngắn về khóa học..."
+                          class="rounded-lg border border-outline-variant px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"></textarea>
+            </div>
+
+            <div class="flex items-center justify-end gap-3 pt-2">
+                <button type="button" onclick="dongModal()"
+                        class="px-4 py-2.5 rounded-lg border border-outline-variant text-sm font-medium text-on-surface-variant hover:bg-surface-container transition">
+                    Hủy
+                </button>
+                <button type="submit"
+                        class="px-4 py-2.5 rounded-lg bg-primary text-white text-sm font-medium hover:opacity-90 transition">
+                    Lưu khóa học
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<!-- ================================================= -->
+<!-- MODAL XÁC NHẬN XÓA -->
+<!-- ================================================= -->
+
+<div id="oModalXoa"
+     class="hidden fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-4">
+
+    <div class="bg-white rounded-xl w-full max-w-[400px] p-6">
+
+        <div class="flex items-center gap-3 mb-2">
+            <div class="w-11 h-11 rounded-full bg-red-50 text-error flex items-center justify-center">
+                <span class="material-symbols-outlined">warning</span>
+            </div>
+            <h3 class="text-lg font-semibold text-primary">
+                Xóa khóa học
+            </h3>
+        </div>
+
+        <p class="text-sm text-on-surface-variant mt-2">
+            Bạn có chắc chắn muốn xóa khóa học "<span id="oTenXoa" class="font-medium text-on-surface"></span>"? Hành động này không thể hoàn tác.
+        </p>
+
+        <div class="flex items-center justify-end gap-3 mt-6">
+            <button onclick="dongModalXoa()"
+                    class="px-4 py-2.5 rounded-lg border border-outline-variant text-sm font-medium text-on-surface-variant hover:bg-surface-container transition">
+                Hủy
+            </button>
+            <button onclick="xacNhanXoa()"
+                    class="px-4 py-2.5 rounded-lg bg-error text-white text-sm font-medium hover:opacity-90 transition">
+                Xóa khóa học
+            </button>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- TOAST -->
+
+<div id="oToast"
+     class="hidden fixed bottom-6 right-6 z-50 bg-primary text-white px-5 py-3 rounded-lg shadow-lg text-sm font-medium">
+</div>
+
+<script>
+
+    // ================================================
+    // DỮ LIỆU MẪU (sẽ được thay bằng dữ liệu thật khi nối CSDL)
+    // ================================================
+
+    let danhSachKhoaHoc = @Html.Raw(
+    System.Text.Json.JsonSerializer.Serialize(
+        Model,
+        new System.Text.Json.JsonSerializerOptions
+        {
+            PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase
+        }
+    )
+);
+
+    let dangSuaId = null;
+    let dangXoaId = null;
+
+    // ================================================
+    // TIỆN ÍCH
+    // ================================================
+
+    function dinhDangTien(so) {
+        return so.toLocaleString("vi-VN") + " ₫";
+    }
+
+    
+
+    function hienToast(noiDung) {
+        const oToast = document.getElementById("oToast");
+        oToast.textContent = noiDung;
+        oToast.classList.remove("hidden");
+        setTimeout(() => oToast.classList.add("hidden"), 2200);
+    }
+
+    // ================================================
+    // RENDER BẢNG + THỐNG KÊ
+    // ================================================
+
+    function renderBang() {
+
+    const tuKhoa =
+        document.getElementById("oTimKiem")
+            .value
+            .trim()
+            .toLowerCase();
+
+    const ngonNgu =
+        document.getElementById("oNgonNgu").value;
+
+    const ketQua = danhSachKhoaHoc.filter(kh => {
+
+        const maKhoaHoc =
+            "KH" + String(kh.id).padStart(3, "0");
+
+        const khopTuKhoa =
+            (kh.tenKhoaHoc || "")
+                .toLowerCase()
+                .includes(tuKhoa)
+            ||
+            maKhoaHoc
+                .toLowerCase()
+                .includes(tuKhoa);
+
+        const khopNgonNgu =
+            !ngonNgu ||
+            kh.ngonNgu === ngonNgu;
+
+        return khopTuKhoa && khopNgonNgu;
+    });
+
+
+    const thanBang =
+        document.getElementById("thanBang");
+
+    const oRong =
+        document.getElementById("oRong");
+
+    thanBang.innerHTML = "";
+
+
+    if (ketQua.length === 0) {
+
+        oRong.classList.remove("hidden");
+
+    } else {
+
+        oRong.classList.add("hidden");
+    }
+
+
+    ketQua.forEach(kh => {
+
+        const maKhoaHoc =
+            "KH" + String(kh.id).padStart(3, "0");
+
+        const hang =
+            document.createElement("tr");
+
+        hang.className =
+            "table-row border-b border-surface-variant";
+
+
+        hang.innerHTML = `
+
+            <td class="px-6 py-4 font-medium text-primary">
+                ${maKhoaHoc}
+            </td>
+
+            <td class="px-6 py-4">
+                <div class="font-medium text-on-surface">
+                    ${kh.tenKhoaHoc}
+                </div>
+            </td>
+
+            <td class="px-6 py-4 text-on-surface-variant">
+                ${kh.ngonNgu}
+            </td>
+
+            <td class="px-6 py-4 text-on-surface-variant">
+                ${kh.soBuoi} buổi
+            </td>
+
+            <td class="px-6 py-4 text-on-surface-variant">
+                ${dinhDangTien(kh.gia)}
+            </td>
+
+            <td class="px-6 py-4 text-on-surface-variant">
+                ${kh.moTa || ""}
+            </td>
+
+            <td class="px-6 py-4">
+
+                <div class="flex items-center justify-end gap-1">
+
+                    <button
+                        onclick="moModalSua(${kh.id})"
+                        title="Sửa"
+                        class="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-primary transition">
+
+                        <span class="material-symbols-outlined text-[20px]">
+                            edit
+                        </span>
+
+                    </button>
+
+
+                    <button
+                        onclick="moModalXoa(${kh.id})"
+                        title="Xóa"
+                        class="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-red-50 hover:text-error transition">
+
+                        <span class="material-symbols-outlined text-[20px]">
+                            delete
+                        </span>
+
+                    </button>
+
+                </div>
+
+            </td>
+        `;
+
+        thanBang.appendChild(hang);
+    });
+
+
+    renderThongKe();
+}
+
+    function renderThongKe() {
+
+    document.getElementById("statTong").textContent =
+        danhSachKhoaHoc.length;
+
+}
+
+    // ================================================
+    // MODAL THÊM / SỬA
+    // ================================================
+
+    function moModalThem() {
+
+    document.getElementById("fId").value = "";
+
+    document.getElementById("fTen").value = "";
+
+    document.getElementById("fNgonNgu").value = "";
+
+    document.getElementById("fSoBuoi").value = "";
+
+    document.getElementById("fHocPhi").value = "";
+
+    document.getElementById("fMoTa").value = "";
+
+    document.getElementById("oTieuDeModal").textContent =
+        "Thêm khóa học";
+
+    document.getElementById("oModalKhoaHoc")
+        .classList.remove("hidden");
+}
+
+    function moModalSua(id) {
+
+    const kh = danhSachKhoaHoc.find(
+        x => x.id === id
+    );
+
+    if (!kh) {
+        alert("Không tìm thấy khóa học.");
+        return;
+    }
+
+    document.getElementById("fId").value =
+        kh.id;
+
+    document.getElementById("fTen").value =
+        kh.tenKhoaHoc;
+
+    document.getElementById("fNgonNgu").value =
+        kh.ngonNgu;
+
+    document.getElementById("fSoBuoi").value =
+        kh.soBuoi;
+
+    document.getElementById("fHocPhi").value =
+        kh.gia;
+
+    document.getElementById("fMoTa").value =
+        kh.moTa || "";
+
+    document.getElementById("oTieuDeModal").textContent =
+        "Sửa khóa học";
+
+    document.getElementById("oModalKhoaHoc")
+        .classList.remove("hidden");
+}
+
+    function dongModal() {
+        document.getElementById("oModalKhoaHoc").classList.add("hidden");
+    }
+
+    async function luuKhoaHoc(event) {
+    event.preventDefault();
+
+    const id = document.getElementById("fId").value;
+
+    const duLieu = {
+        tenKhoaHoc: document.getElementById("fTen").value.trim(),
+        ngonNgu: document.getElementById("fNgonNgu").value,
+        soBuoi: parseInt(
+            document.getElementById("fSoBuoi").value,
+            10
+        ),
+        gia: parseFloat(
+            document.getElementById("fHocPhi").value
+        ),
+        moTa: document.getElementById("fMoTa").value.trim()
+    };
+
+    // Kiểm tra dữ liệu
+    if (!duLieu.tenKhoaHoc) {
+        alert("Vui lòng nhập tên khóa học.");
+        return;
+    }
+
+    if (!duLieu.ngonNgu) {
+        alert("Vui lòng chọn ngôn ngữ.");
+        return;
+    }
+
+    if (isNaN(duLieu.soBuoi) || duLieu.soBuoi <= 0) {
+        alert("Số buổi phải lớn hơn 0.");
+        return;
+    }
+
+    if (isNaN(duLieu.gia) || duLieu.gia < 0) {
+        alert("Học phí không hợp lệ.");
+        return;
+    }
+
+    try {
+        let response;
+
+        // SỬA
+        if (id) {
+            response = await fetch(
+                `/QuanLy/SuaKhoaHoc/${id}`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(duLieu)
+                }
+            );
+        }
+
+        // THÊM
+        else {
+            response = await fetch(
+                "/QuanLy/ThemKhoaHoc",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(duLieu)
+                }
+            );
+        }
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            console.error(result);
+            alert(
+                result.message ||
+                "Có lỗi xảy ra khi lưu khóa học."
+            );
+            return;
+        }
+
+        alert(result.message);
+
+        // Đóng modal
+        dongModal();
+
+        // Tải lại dữ liệu từ SQL Server
+        location.reload();
+
+    } catch (error) {
+        console.error(error);
+        alert("Không thể kết nối đến máy chủ.");
+    }
+}
+
+    // ================================================
+    // MODAL XÓA
+    // ================================================
+
+   function moModalXoa(id) {
+
+    const kh =
+        danhSachKhoaHoc.find(k => k.id === id);
+
+    if (!kh) return;
+
+    dangXoaId = id;
+
+    document.getElementById("oTenXoa").textContent =
+        kh.tenKhoaHoc;
+
+    document.getElementById("oModalXoa")
+        .classList.remove("hidden");
+}
+
+    function dongModalXoa() {
+        dangXoaId = null;
+        document.getElementById("oModalXoa").classList.add("hidden");
+    }
+
+    async function xacNhanXoa() {
+
+    if (!dangXoaId) {
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `/QuanLy/XoaKhoaHoc/${dangXoaId}`,
+            {
+                method: "DELETE"
+            }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            alert(
+                result.message ||
+                "Không thể xóa khóa học."
+            );
+            return;
+        }
+
+        alert(result.message);
+
+        // Đóng modal xóa
+        dongModalXoa();
+
+        // Đọc lại dữ liệu từ SQL Server
+        location.reload();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert("Không thể kết nối đến máy chủ.");
+    }
+}
+
+    // ================================================
+    // KHỞI TẠO
+    // ================================================
+
+    renderBang();
+
+</script>
+<!-- ================================================= -->
+<!-- CHATBOT NỔI (GÓC DƯỚI BÊN PHẢI) -->
+<!-- ================================================= -->
+
+<div id="oChatbotPanel"
+     class="hidden fixed bottom-24 right-6 z-[99999] w-[360px] max-w-[92vw] h-[480px] max-h-[75vh] bg-white rounded-xl border border-outline-variant shadow-2xl flex flex-col overflow-hidden">
+
+    <div class="bg-primary text-white px-4 py-4 flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center">
+                <span class="material-symbols-outlined text-[20px]">smart_toy</span>
+            </div>
+            <div>
+                <div class="text-sm font-semibold">Trợ lý AI</div>
+                <div class="text-xs text-white/70">Luôn sẵn sàng hỗ trợ</div>
+            </div>
+        </div>
+        <button onclick="dongChatbot()"
+                class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 transition">
+            <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+    </div>
+
+    <div id="oChatMessages"
+         class="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-3 bg-surface">
+        <div class="flex items-start gap-2">
+            <div class="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-[16px]">smart_toy</span>
+            </div>
+            <div class="bg-white border border-outline-variant rounded-xl rounded-tl-none px-3 py-2 text-sm max-w-[80%]">
+                Xin chào! Tôi có thể giúp gì cho bạn hôm nay?
+            </div>
+        </div>
+    </div>
+
+    <form onsubmit="guiTinNhanChatbot(event)"
+          class="border-t border-surface-variant p-3 flex items-center gap-2 shrink-0 bg-white">
+        <input id="oChatInput"
+               type="text"
+               autocomplete="off"
+               placeholder="Nhập câu hỏi của bạn..."
+               class="flex-1 rounded-lg border border-outline-variant px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20">
+        <button type="submit"
+                class="w-10 h-10 shrink-0 rounded-lg bg-primary text-white flex items-center justify-center hover:opacity-90 transition">
+            <span class="material-symbols-outlined text-[20px]">send</span>
+        </button>
+    </form>
+
+</div>
+
+<button id="oChatbotToggle"
+        onclick="moChatbot()"
+        class="fixed bottom-6 right-6 z-[99999] w-14 h-14 rounded-full bg-primary text-white shadow-xl flex items-center justify-center hover:opacity-90 transition">
+    <span class="material-symbols-outlined text-[26px]">
+        smart_toy
+    </span>
+</button>
+
+<script>
+
+    function moChatbot() {
+        document.getElementById("oChatbotPanel").classList.remove("hidden");
+        document.getElementById("oChatbotToggle").classList.add("hidden");
+        document.getElementById("oChatInput").focus();
+    }
+
+    function dongChatbot() {
+        document.getElementById("oChatbotPanel").classList.add("hidden");
+        document.getElementById("oChatbotToggle").classList.remove("hidden");
+    }
+
+    function themTinNhanChatbot(noiDung, nguoiGui) {
+
+        const oChatMessages = document.getElementById("oChatMessages");
+        const dong = document.createElement("div");
+
+        if (nguoiGui === "nguoiDung") {
+
+            dong.className = "flex items-start gap-2 justify-end";
+            dong.innerHTML = `
+                <div class="bg-primary text-white rounded-xl rounded-tr-none px-3 py-2 text-sm max-w-[80%]">
+                    ${noiDung}
+                </div>
+            `;
+
+        } else {
+
+            dong.className = "flex items-start gap-2";
+            dong.innerHTML = `
+                <div class="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-[16px]">smart_toy</span>
+                </div>
+                <div class="bg-white border border-outline-variant rounded-xl rounded-tl-none px-3 py-2 text-sm max-w-[80%]">
+                    ${noiDung}
+                </div>
+            `;
+
+        }
+
+        oChatMessages.appendChild(dong);
+        oChatMessages.scrollTop = oChatMessages.scrollHeight;
+
+    }
+
+    async function guiTinNhanChatbot(su) {
+
+        su.preventDefault();
+
+        const oChatInput = document.getElementById("oChatInput");
+        const noiDung = oChatInput.value.trim();
+
+        if (!noiDung) return;
+
+        themTinNhanChatbot(noiDung, "nguoiDung");
+        oChatInput.value = "";
+
+        try {
+            themTinNhanChatbot("Đang xử lý...", "bot");
+            const response = await fetch("/api/chatbot", { method: "POST", headers: { "Content-Type": "application/json" }, credentials: "same-origin", body: JSON.stringify({ message: noiDung }) });
+            const data = await response.json();
+            const messages = document.getElementById("oChatMessages");
+            if (messages.lastElementChild?.textContent.includes("Đang xử lý...")) messages.lastElementChild.remove();
+            themTinNhanChatbot(response.ok ? (data.answer || "AI không trả về câu trả lời.") : (data.message || "Có lỗi xảy ra khi kết nối với chatbot."), "bot");
+        } catch (error) {
+            console.error("Lỗi chatbot:", error);
+            themTinNhanChatbot("Không thể kết nối đến máy chủ chatbot.", "bot");
+        }
+
+    }
+
+</script>
+<script src="~/js/chatbot-history.js" asp-append-version="true"></script>
+</body>
+</html>

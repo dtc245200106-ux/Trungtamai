@@ -1,0 +1,347 @@
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+
+    <meta charset="utf-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Đăng nhập - LinguistAI</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+          rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+          rel="stylesheet">
+
+    <script>
+
+        tailwind.config = {
+
+            darkMode: "class",
+
+            theme: {
+
+                extend: {
+
+                    colors: {
+
+                        primary: "#091426",
+
+                        "on-primary": "#ffffff",
+
+                        background: "#f7f9fb",
+
+                        surface: "#f7f9fb",
+
+                        "surface-container-low": "#f2f4f6",
+
+                        "surface-container-lowest": "#ffffff",
+
+                        "surface-variant": "#e0e3e5",
+
+                        "outline-variant": "#c5c6cd",
+
+                        "on-surface": "#191c1e",
+
+                        "on-surface-variant": "#45474c",
+
+                        error: "#ba1a1a"
+
+                    },
+
+                    borderRadius: {
+
+                        DEFAULT: "0.25rem",
+
+                        lg: "0.5rem",
+
+                        xl: "0.75rem",
+
+                        full: "9999px"
+
+                    },
+
+                    spacing: {
+
+                        xs: "4px",
+
+                        base: "8px",
+
+                        sm: "12px",
+
+                        md: "24px",
+
+                        lg: "40px"
+
+                    },
+
+                    fontFamily: {
+
+                        sans: ["Inter"]
+
+                    }
+
+                }
+
+            }
+
+        };
+
+    </script>
+
+    <style>
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .input-field {
+            transition: all 0.2s ease-in-out;
+        }
+
+        .input-field:focus-within {
+            box-shadow:
+                0 0 0 2px rgba(0, 106, 97, 0.2);
+
+            border-color: #006a61;
+        }
+
+    </style>
+
+</head>
+
+
+<body class="bg-background text-on-surface min-h-screen flex items-center justify-center antialiased">
+
+
+    <!-- Background -->
+
+    <div class="fixed inset-0 z-0 bg-surface-container-low"></div>
+
+
+    <!-- LOGIN -->
+
+    <main class="relative z-10 w-full max-w-[440px] px-4">
+
+        <div class="bg-white rounded-xl p-10 flex flex-col gap-6 shadow-sm border border-outline-variant">
+
+
+            <!-- HEADER -->
+
+            <div class="text-center flex flex-col items-center gap-2 pb-3 border-b border-surface-variant">
+
+                <div class="w-16 h-16 rounded-lg bg-primary text-white flex items-center justify-center mb-2 shadow-sm">
+
+                    <span class="material-symbols-outlined text-4xl"
+                          style="font-variation-settings: 'FILL' 1;">
+
+                        school
+
+                    </span>
+
+                </div>
+
+
+                <h1 class="text-3xl font-semibold text-primary tracking-tight">
+
+                    LinguistAI
+
+                </h1>
+
+
+                <h2 class="text-base text-on-surface">
+
+                    Đăng nhập hệ thống
+
+                </h2>
+
+            </div>
+
+
+            <!-- ERROR -->
+
+            @if (ViewBag.Error != null)
+            {
+                <div class="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+
+                    @ViewBag.Error
+
+                </div>
+            }
+
+
+            <!-- FORM -->
+
+            <form asp-controller="Account"
+                  asp-action="Login"
+                  method="post"
+                  class="flex flex-col gap-6">
+
+
+                <!-- EMAIL -->
+
+                <div class="flex flex-col gap-1">
+
+                    <label for="TaiKhoan"
+                           class="font-semibold text-sm text-on-surface">
+
+                        Email
+
+                    </label>
+
+
+                    <div class="relative flex items-center input-field rounded-lg border border-outline-variant bg-white">
+
+                        <span class="material-symbols-outlined absolute left-3 text-on-surface-variant">
+
+                            person
+
+                        </span>
+
+
+                        <input id="TaiKhoan"
+                               name="TaiKhoan"
+                               type="text"
+                               placeholder="Nhập email "
+                               required
+                               autocomplete="username"
+                               class="w-full pl-10 pr-4 py-3 bg-transparent border-none focus:ring-0 text-base text-on-surface placeholder-gray-400 rounded-lg outline-none">
+
+                    </div>
+
+                </div>
+
+
+                <!-- PASSWORD -->
+
+                <div class="flex flex-col gap-1">
+
+                    <label for="MatKhau"
+                           class="font-semibold text-sm text-on-surface">
+
+                        Mật khẩu
+
+                    </label>
+
+
+                    <div class="relative flex items-center input-field rounded-lg border border-outline-variant bg-white">
+
+                        <span class="material-symbols-outlined absolute left-3 text-on-surface-variant">
+
+                            lock
+
+                        </span>
+
+
+                        <input id="MatKhau"
+                               name="MatKhau"
+                               type="password"
+                               placeholder="Nhập mật khẩu"
+                               required
+                               autocomplete="current-password"
+                               class="w-full pl-10 pr-12 py-3 bg-transparent border-none focus:ring-0 text-base text-on-surface placeholder-gray-400 rounded-lg outline-none">
+
+
+                        <!-- SHOW PASSWORD -->
+
+                        <button type="button"
+                                onclick="togglePassword()"
+                                aria-label="Hiện hoặc ẩn mật khẩu"
+                                class="absolute right-3 text-on-surface-variant hover:text-primary transition-colors">
+
+                            <span id="passwordIcon"
+                                  class="material-symbols-outlined">
+
+                                visibility_off
+
+                            </span>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- LOGIN BUTTON -->
+
+                <button type="submit"
+                        class="w-full py-3 bg-primary text-white font-semibold rounded-lg shadow-sm hover:opacity-90 transition flex items-center justify-center gap-2 mt-1 group">
+
+                    <span>
+                        Đăng nhập
+                    </span>
+
+
+                    <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">
+
+                        arrow_forward
+
+                    </span>
+
+                </button>
+
+
+            </form>
+
+
+            <!-- FOOTER -->
+
+            <div class="text-center text-xs text-gray-400">
+
+                Tài khoản được cấp bởi quản lý trung tâm
+
+            </div>
+
+
+        </div>
+
+    </main>
+
+
+    <!-- PASSWORD SCRIPT -->
+
+    <script>
+
+        function togglePassword() {
+
+            const password =
+                document.getElementById("MatKhau");
+
+            const icon =
+                document.getElementById("passwordIcon");
+
+
+            if (password.type === "password") {
+
+                password.type = "text";
+
+                icon.textContent = "visibility";
+
+            }
+
+            else {
+
+                password.type = "password";
+
+                icon.textContent = "visibility_off";
+
+            }
+
+        }
+
+    </script>
+
+
+</body>
+
+</html>

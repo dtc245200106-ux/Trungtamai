@@ -1,0 +1,767 @@
+@model List<Trungtamai.Models.HocVien>
+
+@{
+    Layout = null;
+    var hoTen = ViewBag.HoTen ?? "Quản lý";
+    var tongHocVien = ViewBag.TongHocVien ?? 0;
+    var dangHoc = ViewBag.DangHoc ?? 0;
+    var tamNgung = ViewBag.TamNgung ?? 0;
+    var daKetThuc = ViewBag.DaKetThuc ?? 0;
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Học viên - LinguistAI</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:FILL@0..1" rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#091426",
+                        "primary-container": "#1e293b",
+                        "on-primary": "#ffffff",
+                        background: "#f7f9fb",
+                        surface: "#f7f9fb",
+                        "surface-container-low": "#f2f4f6",
+                        "surface-container": "#eceef0",
+                        "surface-container-high": "#e6e8ea",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-variant": "#e0e3e5",
+                        "outline-variant": "#c5c6cd",
+                        "on-surface": "#191c1e",
+                        "on-surface-variant": "#45474c",
+                        secondary: "#006a61",
+                        error: "#ba1a1a"
+                    },
+                    fontFamily: { sans: ["Inter"] },
+                    borderRadius: { lg: "0.5rem", xl: "0.75rem" }
+                }
+            }
+        };
+    </script>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; }
+        .sidebar-item { transition: all 0.2s ease; }
+        .sidebar-item:hover { background: #e6e8ea; }
+        .sidebar-item.active { background: #091426; color: white; }
+        .stat-card { transition: all 0.2s ease; }
+        .stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+<div class="min-h-screen flex">
+
+    <!-- SIDEBAR -->
+    <aside class="w-[250px] bg-white border-r border-outline-variant fixed left-0 top-0 bottom-0 flex flex-col">
+        <div class="h-[80px] flex items-center px-6 border-b border-surface-variant">
+            <div class="w-10 h-10 rounded-lg bg-primary text-white flex items-center justify-center mr-3">
+                <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1">school</span>
+            </div>
+            <div>
+                <div class="font-bold text-primary text-lg">LinguistAI</div>
+                <div class="text-xs text-on-surface-variant">Quản lý trung tâm</div>
+            </div>
+        </div>
+        <nav class="flex-1 px-3 py-5 space-y-1">
+            <a asp-controller="QuanLy" asp-action="Index" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-surface-variant">
+                <span class="material-symbols-outlined">dashboard</span> Tổng quan
+            </a>
+            <a asp-controller="QuanLy" asp-action="HocVien" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium">
+                <span class="material-symbols-outlined">group</span> Học viên
+            </a>
+            <a asp-controller="QuanLy" asp-action="GiaoVien" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-surface-variant">
+                <span class="material-symbols-outlined">person</span> Giáo viên
+            </a>
+            <a asp-controller="QuanLy" asp-action="KhoaHoc" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-surface-variant">
+                <span class="material-symbols-outlined">menu_book</span> Khóa học
+            </a>
+            <a asp-controller="QuanLy" asp-action="LopHoc" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-surface-variant">
+                <span class="material-symbols-outlined">groups</span> Lớp học
+            </a>
+            <a asp-controller="QuanLy" asp-action="LichHoc" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-surface-variant">
+                <span class="material-symbols-outlined">calendar_month</span> Lịch học
+            </a>
+            <a asp-controller="QuanLy" asp-action="HocPhi" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-surface-variant">
+                <span class="material-symbols-outlined">payments</span> Học phí
+            </a>
+            <a asp-controller="QuanLy" asp-action="KetQuaHocTap" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-surface-variant">
+                <span class="material-symbols-outlined">assessment</span> Kết quả học tập
+            </a>
+            <a asp-controller="QuanLy" asp-action="ThongKe" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-on-surface-variant">
+                <span class="material-symbols-outlined">bar_chart</span> Thống kê
+            </a>
+        </nav>
+        <div class="border-t border-surface-variant p-4">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center font-semibold">
+                    @(hoTen.ToString().Length > 0 ? hoTen.ToString().Substring(0, 1).ToUpper() : "Q")
+                </div>
+                <div class="min-w-0">
+                    <div class="font-medium text-sm truncate">@hoTen</div>
+                    <div class="text-xs text-on-surface-variant">Quản lý</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="ml-[250px] flex-1 min-h-screen">
+        <header class="h-[80px] bg-white border-b border-outline-variant flex items-center justify-between px-8 sticky top-0 z-10">
+            <div>
+                <h1 class="text-2xl font-bold text-primary">Quản lý Học viên</h1>
+                <p class="text-sm text-on-surface-variant mt-0.5">Danh sách học viên, lớp và khóa học</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <button type="button" onclick="moModalThem()"
+                        class="flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:opacity-90 transition">
+                    <span class="material-symbols-outlined text-[20px]">person_add</span>
+                    Thêm học viên
+                </button>
+                <a asp-controller="Account" asp-action="Logout"
+                   class="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-outline-variant text-sm font-medium text-on-surface-variant hover:bg-surface-container transition">
+                    <span class="material-symbols-outlined text-[20px]">logout</span>
+                    Đăng xuất
+                </a>
+            </div>
+        </header>
+
+        <div class="p-8">
+            @if (TempData["Success"] != null)
+            {
+                <div class="mb-6 flex items-center gap-3 p-4 rounded-xl bg-green-50 border border-green-200 text-green-700">
+                    <span class="material-symbols-outlined">check_circle</span>
+                    <span>@TempData["Success"]</span>
+                </div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="mb-6 flex items-center gap-3 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700">
+                    <span class="material-symbols-outlined">error</span>
+                    <span>@TempData["Error"]</span>
+                </div>
+            }
+
+            <!-- STATS -->
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-5 mb-8">
+                <div class="stat-card bg-white rounded-xl border border-outline-variant p-5">
+                    <div class="w-11 h-11 rounded-lg bg-surface-container flex items-center justify-center">
+                        <span class="material-symbols-outlined text-primary">group</span>
+                    </div>
+                    <div class="mt-5">
+                        <div class="text-sm text-on-surface-variant">Tổng học viên</div>
+                        <div class="text-3xl font-semibold text-primary mt-1">@tongHocVien</div>
+                    </div>
+                </div>
+                <div class="stat-card bg-white rounded-xl border border-outline-variant p-5">
+                    <div class="w-11 h-11 rounded-lg bg-surface-container flex items-center justify-center">
+                        <span class="material-symbols-outlined text-primary">school</span>
+                    </div>
+                    <div class="mt-5">
+                        <div class="text-sm text-on-surface-variant">Đang học</div>
+                        <div class="text-3xl font-semibold text-primary mt-1">@dangHoc</div>
+                    </div>
+                </div>
+                <div class="stat-card bg-white rounded-xl border border-outline-variant p-5">
+                    <div class="w-11 h-11 rounded-lg bg-surface-container flex items-center justify-center">
+                        <span class="material-symbols-outlined text-primary">pause_circle</span>
+                    </div>
+                    <div class="mt-5">
+                        <div class="text-sm text-on-surface-variant">Tạm ngưng</div>
+                        <div class="text-3xl font-semibold text-primary mt-1">@tamNgung</div>
+                    </div>
+                </div>
+                <div class="stat-card bg-white rounded-xl border border-outline-variant p-5">
+                    <div class="w-11 h-11 rounded-lg bg-surface-container flex items-center justify-center">
+                        <span class="material-symbols-outlined text-primary">check_circle</span>
+                    </div>
+                    <div class="mt-5">
+                        <div class="text-sm text-on-surface-variant">Đã kết thúc</div>
+                        <div class="text-3xl font-semibold text-primary mt-1">@daKetThuc</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEARCH + LỌC LỚP HỌC -->
+<div class="bg-white rounded-xl border border-outline-variant p-5 mb-6">
+    <div class="flex flex-col sm:flex-row gap-4">
+        <!-- Ô tìm kiếm -->
+        <div class="relative flex-1">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+            <input id="timKiem" type="text" placeholder="Tìm theo mã, tên, SĐT, email, khóa học..."
+                   class="w-full pl-10 pr-4 py-2.5 rounded-lg border border-outline-variant bg-surface-container-low text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" />
+        </div>
+
+        <!-- Dropdown lọc lớp học -->
+        <div class="w-full sm:w-64">
+            <select id="locLopHoc"
+                    class="w-full rounded-lg border border-outline-variant bg-surface-container-low px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20">
+                <option value="">-- Tất cả lớp học --</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+            <!-- TABLE -->
+<div class="bg-white rounded-xl border border-outline-variant overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="min-w-full text-left text-sm">
+            <thead class="bg-surface-container-low text-on-surface-variant">
+                <tr>
+                    <th class="px-5 py-4 font-medium">Mã HV</th>
+                    <th class="px-5 py-4 font-medium">Họ và tên</th>
+                    <th class="px-5 py-4 font-medium">Số điện thoại</th>
+                    <th class="px-5 py-4 font-medium">Email</th>
+                    <th class="px-5 py-4 font-medium">Ngôn ngữ</th>
+                    <th class="px-5 py-4 font-medium">Khóa học</th>
+                    <th class="px-5 py-4 font-medium">Lớp học</th>
+                    <th class="px-5 py-4 font-medium">Trạng thái</th>
+                    <th class="px-5 py-4 font-medium text-right">Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var hv in Model)
+                {
+                    var mau = hv.TrangThai == "Đang học" ? "bg-emerald-100 text-emerald-700"
+                        : hv.TrangThai == "Tạm ngưng" ? "bg-amber-100 text-amber-700"
+                        : "bg-gray-100 text-gray-600";
+                    <tr class="dong-hv border-t border-outline-variant hover:bg-surface-container-low"
+    data-lop-hoc="@hv.LopHoc">
+                        <td class="px-5 py-4">
+                            <span class="inline-flex px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary">@hv.MaHocVien</span>
+                        </td>
+                        <td class="px-5 py-4 font-medium">@hv.HoTen</td>
+                        <td class="px-5 py-4">@hv.SoDienThoai</td>
+                        <td class="px-5 py-4 text-on-surface-variant">@hv.Email</td>
+                        <td class="px-5 py-4">
+                            @if (!string.IsNullOrEmpty(hv.NgonNgu))
+                            {
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700">@hv.NgonNgu</span>
+                            }
+                            else
+                            {
+                                <span class="text-on-surface-variant">—</span>
+                            }
+                        </td>
+                        <td class="px-5 py-4">@hv.KhoaHoc</td>
+                        <td class="px-5 py-4">@hv.LopHoc</td>
+                        <td class="px-5 py-4">
+                            <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium @mau">@hv.TrangThai</span>
+                        </td>
+                        <td class="px-5 py-4 text-right">
+                            <div class="flex items-center justify-end gap-3">
+                                <button type="button"
+                                        onclick='moModalSua(
+@hv.Id,
+@Html.Raw(System.Text.Json.JsonSerializer.Serialize(hv.HoTen)),
+@Html.Raw(System.Text.Json.JsonSerializer.Serialize(hv.SoDienThoai)),
+@Html.Raw(System.Text.Json.JsonSerializer.Serialize(hv.Email)),
+@Html.Raw(System.Text.Json.JsonSerializer.Serialize(hv.KhoaHoc)),
+@Html.Raw(System.Text.Json.JsonSerializer.Serialize(hv.LopHoc)),
+@Html.Raw(System.Text.Json.JsonSerializer.Serialize(hv.NgonNgu)),
+@Html.Raw(System.Text.Json.JsonSerializer.Serialize(hv.TrangThai))
+)'
+                                        class="text-sm font-medium text-blue-600 hover:underline">Sửa</button>
+                                <button type="button"
+                                        onclick='moModalXoa(@hv.Id, @Html.Raw(System.Text.Json.JsonSerializer.Serialize(hv.HoTen)))'
+                                        class="text-sm font-medium text-red-600 hover:underline">Xóa</button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="9" class="px-6 py-10 text-center text-on-surface-variant">Chưa có học viên nào.</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>
+        </div>
+    </main>
+</div>
+
+<!-- MODAL THÊM -->
+<div id="modalThem" class="hidden fixed inset-0 z-[9999] bg-black/50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between px-6 py-5 border-b border-outline-variant sticky top-0 bg-white z-10">
+            <div>
+                <h2 class="text-xl font-bold text-primary">Thêm học viên</h2>
+                <p class="text-sm text-on-surface-variant mt-1">Mã học viên sẽ tự động tạo.</p>
+            </div>
+            <button type="button" onclick="dongModalThem()" class="w-9 h-9 rounded-lg hover:bg-surface-container flex items-center justify-center">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <form asp-controller="QuanLy" asp-action="ThemHocVien" method="post" class="p-6">
+            @Html.AntiForgeryToken()
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">Họ và tên *</label>
+                <input type="text" name="hoTen" required class="w-full rounded-lg border border-outline-variant px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary/20" />
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">Số điện thoại *</label>
+                <input type="text" name="soDienThoai" required class="w-full rounded-lg border border-outline-variant px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary/20" />
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">Email *</label>
+                <input type="email" name="email" required class="w-full rounded-lg border border-outline-variant px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary/20" />
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">Ngôn ngữ</label>
+                <select name="ngonNgu" id="themNgonNgu" onchange="locTheoNgonNgu('them')"
+                        class="w-full rounded-lg border border-outline-variant px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary/20">
+                    <option value="">-- Chọn --</option>
+                    <option value="Tiếng Anh">Tiếng Anh</option>
+                    <option value="Tiếng Trung">Tiếng Trung</option>
+                    <option value="Tiếng Nhật">Tiếng Nhật</option>
+                    <option value="Tiếng Hàn">Tiếng Hàn</option>
+                </select>
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">Khóa học</label>
+                <select name="khoaHoc" id="themKhoaHoc" onchange="locTheoKhoaHoc('them')"
+                        class="w-full rounded-lg border border-outline-variant px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary/20">
+                    <option value="">-- Chọn khóa học --</option>
+                </select>
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">Lớp học</label>
+                <select name="lopHoc" id="themLopHoc"
+                        class="w-full rounded-lg border border-outline-variant px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary/20">
+                    <option value="">-- Chọn lớp --</option>
+                </select>
+            </div>
+            <div class="mb-6">
+                <label class="block text-sm font-medium mb-2">Trạng thái</label>
+                <select name="trangThai" class="w-full rounded-lg border border-outline-variant px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary/20">
+                    <option value="Đang học">Đang học</option>
+                    <option value="Tạm ngưng">Tạm ngưng</option>
+                    <option value="Đã kết thúc">Đã kết thúc</option>
+                </select>
+            </div>
+            <div class="flex justify-end gap-3">
+                <button type="button" onclick="dongModalThem()" class="px-4 py-2.5 rounded-lg border border-outline-variant text-sm font-medium hover:bg-surface-container">Hủy</button>
+                <button type="submit" class="px-5 py-2.5 rounded-lg bg-primary text-white text-sm font-medium hover:opacity-90">Thêm</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL SỬA -->
+<div id="modalSua" class="hidden fixed inset-0 z-[9999] bg-black/50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between px-6 py-5 border-b border-outline-variant sticky top-0 bg-white z-10">
+            <div>
+                <h2 class="text-xl font-bold text-primary">Sửa học viên</h2>
+            </div>
+            <button type="button" onclick="dongModalSua()" class="w-9 h-9 rounded-lg hover:bg-surface-container flex items-center justify-center">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <form asp-controller="QuanLy" asp-action="SuaHocVien" method="post" class="p-6">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" id="suaId" />
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">Họ và tên *</label>
+                <input type="text" name="hoTen" id="suaHoTen" required class="w-full rounded-lg border border-outline-variant px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary/20" />
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">Số điện thoại *</label>
+                <input type="text" name="soDienThoai" id="suaSdt" required class="w-full rounded-lg border border-outline-variant px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary/20" />
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">Email *</label>
+                <input type="email" name="email" id="suaEmail" required class="w-full rounded-lg border border-outline-variant px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary/20" />
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">Ngôn ngữ</label>
+                <select name="ngonNgu" id="suaNgonNgu" onchange="locTheoNgonNgu('sua')"
+                        class="w-full rounded-lg border border-outline-variant px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary/20">
+                    <option value="">-- Chọn --</option>
+                    <option value="Tiếng Anh">Tiếng Anh</option>
+                    <option value="Tiếng Trung">Tiếng Trung</option>
+                    <option value="Tiếng Nhật">Tiếng Nhật</option>
+                    <option value="Tiếng Hàn">Tiếng Hàn</option>
+                </select>
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">Khóa học</label>
+                <select name="khoaHoc" id="suaKhoaHoc" onchange="locTheoKhoaHoc('sua')"
+                        class="w-full rounded-lg border border-outline-variant px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary/20">
+                    <option value="">-- Chọn khóa học --</option>
+                </select>
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-2">Lớp học</label>
+                <select name="lopHoc" id="suaLopHoc"
+                        class="w-full rounded-lg border border-outline-variant px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary/20">
+                    <option value="">-- Chọn lớp --</option>
+                </select>
+            </div>
+            <div class="mb-6">
+                <label class="block text-sm font-medium mb-2">Trạng thái</label>
+                <select name="trangThai" id="suaTrangThai" class="w-full rounded-lg border border-outline-variant px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary/20">
+                    <option value="Đang học">Đang học</option>
+                    <option value="Tạm ngưng">Tạm ngưng</option>
+                    <option value="Đã kết thúc">Đã kết thúc</option>
+                </select>
+            </div>
+            <div class="flex justify-end gap-3">
+                <button type="button" onclick="dongModalSua()" class="px-4 py-2.5 rounded-lg border border-outline-variant text-sm font-medium hover:bg-surface-container">Hủy</button>
+                <button type="submit" class="px-5 py-2.5 rounded-lg bg-primary text-white text-sm font-medium hover:opacity-90">Cập nhật</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL XÓA -->
+<div id="modalXoa" class="hidden fixed inset-0 z-[9999] bg-black/50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-md">
+        <div class="p-6">
+            <div class="flex items-center gap-4 mb-4">
+                <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
+                    <span class="material-symbols-outlined text-red-600">warning</span>
+                </div>
+                <div>
+                    <h2 class="text-lg font-bold text-primary">Xác nhận xóa</h2>
+                    <p class="text-sm text-on-surface-variant mt-1">Bạn có chắc muốn xóa học viên này?</p>
+                </div>
+            </div>
+            <p class="text-sm mb-6">Học viên: <strong id="tenXoa"></strong></p>
+            <form asp-controller="QuanLy" asp-action="XoaHocVien" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" id="xoaId" />
+                <div class="flex justify-end gap-3">
+                    <button type="button" onclick="dongModalXoa()" class="px-4 py-2.5 rounded-lg border border-outline-variant text-sm font-medium hover:bg-surface-container">Hủy</button>
+                    <button type="submit" class="px-5 py-2.5 rounded-lg bg-red-600 text-white text-sm font-medium hover:bg-red-700">Xóa</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="application/json" id="khoaHocData">
+@Html.Raw(ViewBag.DanhSachKhoaHocJson ?? "[]")
+</script>
+<script type="application/json" id="lopHocData">
+@Html.Raw(ViewBag.DanhSachLopHocJson ?? "[]")
+</script>
+
+<script>
+    let danhSachKhoaHocFull = [];
+    let danhSachLopHocFull = [];
+    try {
+        var elKH = document.getElementById("khoaHocData");
+        if (elKH) danhSachKhoaHocFull = JSON.parse(elKH.textContent.trim() || "[]");
+        var elLH = document.getElementById("lopHocData");
+        if (elLH) danhSachLopHocFull = JSON.parse(elLH.textContent.trim() || "[]");
+    } catch (e) {
+        console.error("Lỗi đọc dữ liệu:", e);
+    }
+
+    // Lọc khóa học theo ngôn ngữ; reset lớp học
+    function locTheoNgonNgu(loai, selectedKhoaHoc, selectedLopHoc) {
+        selectedKhoaHoc = selectedKhoaHoc || "";
+        selectedLopHoc = selectedLopHoc || "";
+
+        var ngonNguSelect = document.getElementById(loai === "them" ? "themNgonNgu" : "suaNgonNgu");
+        var selectKH = document.getElementById(loai === "them" ? "themKhoaHoc" : "suaKhoaHoc");
+        var ngonNgu = ngonNguSelect ? ngonNguSelect.value : "";
+
+        if (selectKH) {
+            selectKH.innerHTML = '<option value="">-- Chọn khóa học --</option>';
+            if (ngonNgu) {
+                for (var i = 0; i < danhSachKhoaHocFull.length; i++) {
+                    var kh = danhSachKhoaHocFull[i];
+                    if (kh.ngonNgu === ngonNgu) {
+                        var opt = document.createElement("option");
+                        opt.value = kh.ten;
+                        opt.textContent = kh.ten;
+                        if (kh.ten === selectedKhoaHoc) opt.selected = true;
+                        selectKH.appendChild(opt);
+                    }
+                }
+            }
+        }
+
+        // Sau khi lọc khóa học → lọc lớp theo khóa học đã chọn
+        locTheoKhoaHoc(loai, selectedLopHoc);
+    }
+
+    // Lọc lớp học theo khóa học (và ngôn ngữ nếu có)
+    function locTheoKhoaHoc(loai, selectedLopHoc) {
+        selectedLopHoc = selectedLopHoc || "";
+
+        var ngonNguSelect = document.getElementById(loai === "them" ? "themNgonNgu" : "suaNgonNgu");
+        var selectKH = document.getElementById(loai === "them" ? "themKhoaHoc" : "suaKhoaHoc");
+        var selectLH = document.getElementById(loai === "them" ? "themLopHoc" : "suaLopHoc");
+        var ngonNgu = ngonNguSelect ? ngonNguSelect.value : "";
+        var khoaHoc = selectKH ? selectKH.value : "";
+
+        if (selectLH) {
+            selectLH.innerHTML = '<option value="">-- Chọn lớp --</option>';
+            if (khoaHoc) {
+                for (var j = 0; j < danhSachLopHocFull.length; j++) {
+                    var lop = danhSachLopHocFull[j];
+                    var matchKhoa = (lop.khoaHoc === khoaHoc);
+                    var matchNgon = !ngonNgu || (lop.ngonNgu === ngonNgu);
+                    if (matchKhoa && matchNgon) {
+                        var opt2 = document.createElement("option");
+                        opt2.value = lop.ten;
+                        opt2.textContent = lop.ten;
+                        if (lop.ten === selectedLopHoc) opt2.selected = true;
+                        selectLH.appendChild(opt2);
+                    }
+                }
+            }
+        }
+    }
+
+    function moModalThem() {
+        document.getElementById("modalThem").classList.remove("hidden");
+        document.body.classList.add("overflow-hidden");
+        var ngonNgu = document.getElementById("themNgonNgu");
+        if (ngonNgu) ngonNgu.value = "";
+        locTheoNgonNgu("them", "", "");
+    }
+    function dongModalThem() {
+        document.getElementById("modalThem").classList.add("hidden");
+        document.body.classList.remove("overflow-hidden");
+    }
+    function moModalSua(id, hoTen, sdt, email, khoaHoc, lopHoc, ngonNgu, trangThai) {
+        document.getElementById("suaId").value = id;
+        document.getElementById("suaHoTen").value = hoTen || "";
+        document.getElementById("suaSdt").value = sdt || "";
+        document.getElementById("suaEmail").value = email || "";
+        document.getElementById("suaNgonNgu").value = ngonNgu || "";
+        document.getElementById("suaTrangThai").value = trangThai || "Đang học";
+
+        // Lọc khóa học theo ngôn ngữ, rồi lớp theo khóa học — giữ giá trị cũ
+        locTheoNgonNgu("sua", khoaHoc || "", lopHoc || "");
+
+        document.getElementById("modalSua").classList.remove("hidden");
+        document.body.classList.add("overflow-hidden");
+    }
+    function dongModalSua() {
+        document.getElementById("modalSua").classList.add("hidden");
+        document.body.classList.remove("overflow-hidden");
+    }
+    function moModalXoa(id, ten) {
+        document.getElementById("xoaId").value = id;
+        document.getElementById("tenXoa").textContent = ten || "";
+        document.getElementById("modalXoa").classList.remove("hidden");
+        document.body.classList.add("overflow-hidden");
+    }
+    function dongModalXoa() {
+        document.getElementById("modalXoa").classList.add("hidden");
+        document.body.classList.remove("overflow-hidden");
+    }
+
+    // ==============================
+// LỌC DANH SÁCH THEO LỚP HỌC
+// ==============================
+function locDanhSachHocVien() {
+    var tuKhoa = (document.getElementById("timKiem")?.value || "").toLowerCase().trim();
+    var lopHoc = (document.getElementById("locLopHoc")?.value || "").trim();
+
+    document.querySelectorAll(".dong-hv").forEach(function (dong) {
+        var matchText = dong.innerText.toLowerCase().includes(tuKhoa);
+        var lopDong = (dong.getAttribute("data-lop-hoc") || "").trim();
+        var matchLop = !lopHoc || lopDong === lopHoc;
+
+        dong.style.display = (matchText && matchLop) ? "" : "none";
+    });
+}
+
+// Nạp danh sách lớp học vào dropdown lọc
+function napDropdownLopHoc() {
+    var select = document.getElementById("locLopHoc");
+    if (!select) return;
+
+    // Giữ option "Tất cả"
+    select.innerHTML = '<option value="">-- Tất cả lớp học --</option>';
+
+    // Lấy danh sách lớp duy nhất
+    var danhSachTenLop = [];
+    for (var i = 0; i < danhSachLopHocFull.length; i++) {
+        var ten = danhSachLopHocFull[i].ten;
+        if (ten && danhSachTenLop.indexOf(ten) === -1) {
+            danhSachTenLop.push(ten);
+        }
+    }
+
+    // Sắp xếp theo tên
+    danhSachTenLop.sort();
+
+    for (var j = 0; j < danhSachTenLop.length; j++) {
+        var opt = document.createElement("option");
+        opt.value = danhSachTenLop[j];
+        opt.textContent = danhSachTenLop[j];
+        select.appendChild(opt);
+    }
+}
+
+// Gọi khi trang load
+napDropdownLopHoc();
+
+// Gắn sự kiện
+var timKiem = document.getElementById("timKiem");
+if (timKiem) {
+    timKiem.addEventListener("input", locDanhSachHocVien);
+}
+
+var locLopHoc = document.getElementById("locLopHoc");
+if (locLopHoc) {
+    locLopHoc.addEventListener("change", locDanhSachHocVien);
+}
+
+    window.addEventListener("click", function (e) {
+        ["modalThem", "modalSua", "modalXoa"].forEach(function (id) {
+            var m = document.getElementById(id);
+            if (e.target === m) {
+                m.classList.add("hidden");
+                document.body.classList.remove("overflow-hidden");
+            }
+        });
+    });
+    document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") {
+            ["modalThem", "modalSua", "modalXoa"].forEach(function (id) {
+                document.getElementById(id).classList.add("hidden");
+            });
+            document.body.classList.remove("overflow-hidden");
+        }
+    });
+</script>
+<!-- CHATBOT NỔI (GÓC DƯỚI BÊN PHẢI) -->
+<div id="oChatbotPanel"
+     class="hidden fixed bottom-24 right-6 z-50 w-[360px] max-w-[92vw] h-[480px] max-h-[75vh] bg-white rounded-xl border border-outline-variant shadow-2xl flex flex-col overflow-hidden">
+
+    <div class="bg-primary text-white px-4 py-4 flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center">
+                <span class="material-symbols-outlined text-[20px]">smart_toy</span>
+            </div>
+            <div>
+                <div class="text-sm font-semibold">Trợ lý AI</div>
+                <div class="text-xs text-white/70">Luôn sẵn sàng hỗ trợ</div>
+            </div>
+        </div>
+        <button type="button" onclick="dongChatbot()"
+                class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/10 transition">
+            <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+    </div>
+
+    <div id="oChatMessages"
+         class="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-3 bg-surface">
+        <div class="flex items-start gap-2">
+            <div class="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center shrink-0">
+                <span class="material-symbols-outlined text-[16px]">smart_toy</span>
+            </div>
+            <div class="bg-white border border-outline-variant rounded-xl rounded-tl-none px-3 py-2 text-sm max-w-[80%]">
+                Xin chào! Tôi có thể giúp gì cho bạn hôm nay?
+            </div>
+        </div>
+    </div>
+
+    <form onsubmit="guiTinNhanChatbot(event)"
+          class="border-t border-surface-variant p-3 flex items-center gap-2 shrink-0 bg-white">
+        <input id="oChatInput"
+               type="text"
+               autocomplete="off"
+               placeholder="Nhập câu hỏi của bạn..."
+               class="flex-1 rounded-lg border border-outline-variant px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20">
+        <button type="submit"
+                class="w-10 h-10 shrink-0 rounded-lg bg-primary text-white flex items-center justify-center hover:opacity-90 transition">
+            <span class="material-symbols-outlined text-[20px]">send</span>
+        </button>
+    </form>
+</div>
+
+<!-- NÚT MỞ CHATBOT -->
+<button id="oChatbotToggle"
+        type="button"
+        onclick="moChatbot()"
+        class="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-primary text-white shadow-xl flex items-center justify-center hover:opacity-90 transition">
+    <span class="material-symbols-outlined text-[26px]">smart_toy</span>
+</button>
+
+<script>
+    function moChatbot() {
+        document.getElementById("oChatbotPanel").classList.remove("hidden");
+        document.getElementById("oChatbotToggle").classList.add("hidden");
+        document.getElementById("oChatInput").focus();
+    }
+
+    function dongChatbot() {
+        document.getElementById("oChatbotPanel").classList.add("hidden");
+        document.getElementById("oChatbotToggle").classList.remove("hidden");
+    }
+
+    function themTinNhanChatbot(noiDung, nguoiGui) {
+        const oChatMessages = document.getElementById("oChatMessages");
+        const dong = document.createElement("div");
+
+        if (nguoiGui === "nguoiDung") {
+            dong.className = "flex items-start gap-2 justify-end";
+            dong.innerHTML = `
+                <div class="bg-primary text-white rounded-xl rounded-tr-none px-3 py-2 text-sm max-w-[80%]">
+                    ${noiDung}
+                </div>
+            `;
+        } else {
+            dong.className = "flex items-start gap-2";
+            dong.innerHTML = `
+                <div class="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-[16px]">smart_toy</span>
+                </div>
+                <div class="bg-white border border-outline-variant rounded-xl rounded-tl-none px-3 py-2 text-sm max-w-[80%]">
+                    ${noiDung}
+                </div>
+            `;
+        }
+
+        oChatMessages.appendChild(dong);
+        oChatMessages.scrollTop = oChatMessages.scrollHeight;
+    }
+
+    async function guiTinNhanChatbot(su) {
+        su.preventDefault();
+
+        const oChatInput = document.getElementById("oChatInput");
+        const noiDung = oChatInput.value.trim();
+        if (!noiDung) return;
+
+        themTinNhanChatbot(noiDung, "nguoiDung");
+        oChatInput.value = "";
+
+        // Tạm thời trả lời mẫu (sau này gắn API AI)
+        try {
+            themTinNhanChatbot("Đang xử lý...", "bot");
+            const response = await fetch("/api/chatbot", { method: "POST", headers: { "Content-Type": "application/json" }, credentials: "same-origin", body: JSON.stringify({ message: noiDung }) });
+            const data = await response.json();
+            const messages = document.getElementById("oChatMessages");
+            if (messages.lastElementChild?.textContent.includes("Đang xử lý...")) messages.lastElementChild.remove();
+            themTinNhanChatbot(response.ok ? (data.answer || "AI không trả về câu trả lời.") : (data.message || "Có lỗi xảy ra khi kết nối với chatbot."), "bot");
+        } catch (error) {
+            console.error("Lỗi chatbot:", error);
+            themTinNhanChatbot("Không thể kết nối đến máy chủ chatbot.", "bot");
+        }
+    }
+</script>
+<script src="~/js/chatbot-history.js" asp-append-version="true"></script>
+</body>
+</html>
