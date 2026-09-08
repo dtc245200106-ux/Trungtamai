@@ -27,40 +27,45 @@
 
 ## 🛠 Công nghệ
 
-| Công nghệ | Phiên bản | Mục đích |
-|-----------|----------|---------|
-| **.NET** | 10.0 | Framework chính |
-| **ASP.NET Core** | 10.0 | Web framework |
-| **Entity Framework Core** | 10.0.5 | ORM & Database |
-| **SQL Server** | Tùy | Cơ sở dữ liệu |
-| **Gemini API** | 1.19.0 | Chatbot AI |
-| **Razor Pages / MVC** | 10.0 | Giao diện web |
-| **Session Management** | Distributed Memory | Xác thực người dùng |
+| Công nghệ                 | Phiên bản          | Mục đích            |
+| ------------------------- | ------------------ | ------------------- |
+| **.NET**                  | 10.0               | Framework chính     |
+| **ASP.NET Core**          | 10.0               | Web framework       |
+| **Entity Framework Core** | 10.0.5             | ORM & Database      |
+| **SQL Server**            | Tùy                | Cơ sở dữ liệu       |
+| **Google.GenAI package**  | 1.19.0             | Tích hợp chatbot AI |
+| **ASP.NET Core MVC**      | 10.0               | Giao diện web       |
+| **Session Management**    | Distributed Memory | Xác thực người dùng |
 
 ## ⚙️ Yêu cầu hệ thống
 
 ### Bắt buộc
+
 - **OS**: Windows, Linux, hoặc macOS
 - **.NET SDK**: 10.0 hoặc cao hơn
 - **SQL Server**: 2019, 2022, hoặc LocalDB
 - **Trình duyệt**: Chrome, Firefox, Edge (hỗ trợ ES6+)
 
 ### Tùy chọn
+
 - **Visual Studio 2022** hoặc **VS Code** (để phát triển)
 - **Git** (quản lý code)
 
-### API Keys cần thiết
-- **Google Gemini API Key** - để sử dụng chatbot
+### API Key tùy chọn
+
+- **Google Gemini API Key** - cần nếu muốn sử dụng chatbot
 
 ## 📥 Cài đặt
 
 ### 1. Clone Repository
+
 ```bash
 git clone <repository-url>
-cd Trungtamai/Trungtamai/Trungtamai
+cd Trungtamai/Trungtamai/Trungtamai/backend
 ```
 
 ### 2. Cài đặt Dependencies
+
 ```bash
 dotnet restore
 ```
@@ -68,7 +73,9 @@ dotnet restore
 ### 3. Cấu hình Database
 
 #### Option A: SQL Server (khuyến nghị cho Production)
-Cập nhật connection string trong `appsettings.json`:
+
+Cập nhật connection string trong `config/appsettings.json`:
+
 ```json
 {
   "ConnectionStrings": {
@@ -78,22 +85,25 @@ Cập nhật connection string trong `appsettings.json`:
 ```
 
 #### Option B: LocalDB (cho Development)
+
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=TrungtamaiDb;Integrated Security=true;Encrypt=false;TrustServerCertificate=true;"
+    "DefaultConnection": "Server=(localdb)\\MSSQLLocalDB;Database=Trungtamai;Trusted_Connection=True;TrustServerCertificate=True"
   }
 }
 ```
 
 ### 4. Chạy Migration (tạo database schema)
+
 ```bash
+dotnet tool install --global dotnet-ef
 dotnet ef database update
 ```
 
 ## 🔧 Cấu hình
 
-### appsettings.json - Cấu hình chính
+### config/appsettings.json - Cấu hình chính
 
 ```json
 {
@@ -104,28 +114,25 @@ dotnet ef database update
     }
   },
   "ConnectionStrings": {
-    "DefaultConnection": "Server=...;Database=TrungtamaiDb;..."
+    "DefaultConnection": "Server=(localdb)\\MSSQLLocalDB;Database=Trungtamai;Trusted_Connection=True;TrustServerCertificate=True"
   },
   "Gemini": {
     "ApiKey": "YOUR_GEMINI_API_KEY_HERE",
-    "Model": "gemini-2.0-flash"
+    "Model": "gemini-2.5-flash"
   },
   "AllowedHosts": "*"
 }
 ```
 
-### appsettings.Development.json - Cấu hình Development
+### config/appsettings.Development.json - Cấu hình Development
 
 ```json
 {
   "Logging": {
     "LogLevel": {
-      "Default": "Debug",
-      "Microsoft.EntityFrameworkCore.Database.Command": "Information"
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
     }
-  },
-  "Gemini": {
-    "ApiKey": "YOUR_DEV_API_KEY"
   }
 }
 ```
@@ -134,17 +141,20 @@ dotnet ef database update
 
 1. Truy cập: https://aistudio.google.com/apikey
 2. Tạo API key mới
-3. Copy key và paste vào `appsettings.json` hoặc environment variable: `GEMINI_API_KEY`
+3. Copy key và paste vào `config/appsettings.json`.
 
 ## 🚀 Chạy ứng dụng
 
 ### Development Mode
+
 ```bash
 dotnet run
 ```
-Ứng dụng sẽ khởi động tại: `https://localhost:5001` hoặc `http://localhost:5000`
+
+Ứng dụng sẽ khởi động tại: `http://localhost:5088` hoặc `https://localhost:7206`.
 
 ### Production Mode
+
 ```bash
 dotnet publish -c Release -o publish
 cd publish
@@ -152,6 +162,7 @@ dotnet Trungtamai.dll
 ```
 
 ### Chạy qua VS Code
+
 1. Mở project trong VS Code
 2. Nhấn `F5` hoặc chạy từ **Run** menu
 3. Trình duyệt sẽ mở tự động
@@ -187,7 +198,7 @@ Trungtamai/
 │   ├── AppDbContext.cs       # Entity Framework DbContext
 │   └── Migrations/           # Database migrations
 │
-├── Views/                    # Razor Pages / MVC Views
+├── Views/                    # MVC Views
 │   ├── Account/
 │   ├── QuanLy/
 │   ├── GiaoVien/
@@ -201,7 +212,7 @@ Trungtamai/
 │   └── images/
 │
 ├── Program.cs                # Application entry point
-├── appsettings.json          # Cấu hình ứng dụng
+├── config/appsettings.json   # Cấu hình ứng dụng
 ├── Trungtamai.csproj         # Project file
 │
 └── Documentation/
@@ -213,6 +224,7 @@ Trungtamai/
 ## 👥 Vai trò & Quyền hạn
 
 ### 1. **Quản lý (QuanLy)**
+
 - ✅ Xem tổng quan trung tâm
 - ✅ Quản lý học viên, giáo viên
 - ✅ Quản lý khóa học, lớp học
@@ -223,6 +235,7 @@ Trungtamai/
 - 💬 Chatbot: Trả lời câu hỏi về số liệu toàn trung tâm
 
 ### 2. **Giáo viên (GiaoVien)**
+
 - ✅ Xem lớp do mình dạy
 - ✅ Xem lịch dạy
 - ✅ Xem học viên trong lớp
@@ -231,6 +244,7 @@ Trungtamai/
 - 💬 Chatbot: Trả lời câu hỏi về các lớp do mình dạy
 
 ### 3. **Học viên (HocVien)**
+
 - ✅ Xem thông tin cá nhân
 - ✅ Xem lớp học của mình
 - ✅ Xem lịch học
@@ -239,6 +253,7 @@ Trungtamai/
 - 💬 Chatbot: Trả lời câu hỏi cá nhân + tạo bài luyện tập
 
 ### 4. **Tư vấn viên (TuVanVien)**
+
 - ✅ Xem khóa học
 - ✅ Xem lớp học
 - ✅ Xem thông tin học viên (tổng quan)
@@ -254,6 +269,7 @@ Chatbot được xây dựng bằng **Gemini AI** với hỗ trợ **role-based*
 ### Query Types được hỗ trợ
 
 #### 1️⃣ **Direct Handlers** (Không cần AI - nhanh < 200ms)
+
 - ✅ "Bao nhiêu học viên?" → Trả về số lượng theo trạng thái
 - ✅ "Ai chưa đóng học phí?" → Danh sách học viên nợ
 - ✅ "Ai đạt kiểm tra?" → Danh sách học viên đạt (điểm >= 8)
@@ -261,6 +277,7 @@ Chatbot được xây dựng bằng **Gemini AI** với hỗ trợ **role-based*
 - ✅ "Bao nhiêu lớp?" → Số lớp theo ngôn ngữ
 
 #### 2️⃣ **AI-Generated Responses** (Sử dụng Gemini - 2-5 giây)
+
 - ✅ "Tổng quan trung tâm"
 - ✅ "Tôi dạy những lớp nào?"
 - ✅ "Tôi học lớp nào?"
@@ -271,6 +288,7 @@ Chatbot được xây dựng bằng **Gemini AI** với hỗ trợ **role-based*
 ### Cách sử dụng Chatbot
 
 #### Từ Frontend
+
 ```
 1. Đăng nhập vào hệ thống
 2. Tìm icon chatbot (💬) ở góc phải màn hình
@@ -280,9 +298,10 @@ Chatbot được xây dựng bằng **Gemini AI** với hỗ trợ **role-based*
 ```
 
 #### Từ API (Postman / cURL)
+
 ```bash
 POST /api/chatbot HTTP/1.1
-Host: localhost:5001
+Host: localhost:5088
 Content-Type: application/json
 
 {
@@ -291,6 +310,7 @@ Content-Type: application/json
 ```
 
 Response:
+
 ```json
 {
   "answer": "Tổng cộng 150 học viên. Chi tiết: Hoạt động: 120; Tạm dừng: 25; Chưa bắt đầu: 5.",
@@ -301,6 +321,7 @@ Response:
 ### Prompting Guidelines
 
 Chatbot sử dụng **15+ prompt rules** để đảm bảo:
+
 1. ✅ Không sinh ra dữ liệu không tồn tại
 2. ✅ Tuân thủ quyền hạn của từng vai trò
 3. ✅ Trả về số liệu thực từ database
@@ -312,60 +333,78 @@ Xem chi tiết tại: [CHATBOT_HANDLER_FLOW.md](CHATBOT_HANDLER_FLOW.md)
 ## 🧪 Testing
 
 ### Chạy Unit Tests (nếu có)
+
 ```bash
 dotnet test
 ```
 
 ### Test Chatbot qua Postman
+
 1. Mở Postman
-2. Tạo POST request đến: `http://localhost:5001/api/chatbot`
+2. Tạo POST request đến: `http://localhost:5088/api/chatbot`
 3. Body (JSON):
+
 ```json
 {
   "message": "Bao nhiêu học viên?"
 }
 ```
+
 4. Nhấn Send
 
 ### Test Scenarios
+
 Xem tài liệu chi tiết: [CHATBOT_TEST_SCENARIOS.md](CHATBOT_TEST_SCENARIOS.md)
 
 ## 🐛 Troubleshooting
 
 ### 1. **Database Connection Error**
+
 ```
 Error: A network-related or instance-specific error occurred while establishing a connection to SQL Server.
 ```
+
 **Giải pháp:**
-- Kiểm tra connection string trong `appsettings.json`
+
+- Kiểm tra connection string trong `config/appsettings.json`
 - Đảm bảo SQL Server đang chạy
 - Kiểm tra tường lửa cho cổng 1433 (SQL Server)
 
 ### 2. **Gemini API Key Invalid**
+
 ```
 Error: Invalid API key provided.
 ```
+
 **Giải pháp:**
-- Kiểm tra API key trong `appsettings.json`
+
+- Kiểm tra API key trong `config/appsettings.json`
 - Lấy key mới từ: https://aistudio.google.com/apikey
 - Đảm bảo API key không chứa khoảng trắng
 
 ### 3. **Chatbot không trả lời**
+
 **Giải pháp:**
+
 - Kiểm tra cơ sở dữ liệu có dữ liệu hay không
 - Kiểm tra Gemini API quota (không vượt quá)
 - Xem log (Development mode) để debug
 
 ### 4. **Session hết hạn - Cần đăng nhập lại**
+
 **Giải pháp:**
+
 - Mặc định session timeout là 8 giờ
 - Có thể cấu hình trong `Program.cs`:
+
 ```csharp
 options.IdleTimeout = TimeSpan.FromHours(8);
 ```
 
 ### 5. **Trang không tải CSS/JS**
+
 **Giải pháp:**
+
 - Kiểm tra folder `wwwroot` có tồn tại không
 - Chạy `dotnet clean` rồi `dotnet build` lại
 - Clear browser cache (Ctrl+Shift+Delete)
@@ -373,7 +412,9 @@ options.IdleTimeout = TimeSpan.FromHours(8);
 ## 📝 Logging
 
 ### Bật Debug Logging
+
 Sửa `appsettings.Development.json`:
+
 ```json
 {
   "Logging": {
@@ -386,12 +427,14 @@ Sửa `appsettings.Development.json`:
 ```
 
 ### Xem Logs
+
 - Development: Console output
 - Production: Kiểm tra file log (nếu được cấu hình)
 
 ## 🚀 Deployment
 
 ### Deploy lên Azure
+
 ```bash
 # 1. Publish
 dotnet publish -c Release -o publish
@@ -404,6 +447,7 @@ az webapp deployment source config-zip --name <app-name> --resource-group <rg-na
 ```
 
 ### Deploy lên Docker
+
 ```dockerfile
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src

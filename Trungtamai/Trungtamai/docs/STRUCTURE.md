@@ -10,6 +10,9 @@ Trungtamai/
 │   ├── Controllers/            # Các controller xử lý yêu cầu API
 │   ├── Services/               # Lớp xử lý logic nghiệp vụ
 │   ├── Models/                 # Các model dữ liệu và DTOs
+│   ├── Data/                   # DbContext và dữ liệu truy cập database
+│   ├── Migrations/             # EF Core migrations
+│   ├── Views/                  # Razor views của MVC
 │   ├── Properties/             # Thuộc tính dự án và launchSettings
 │   ├── Program.cs              # Điểm vào ứng dụng
 │   └── Trungtamai.csproj       # File cấu hình dự án
@@ -18,9 +21,7 @@ Trungtamai/
 │   ├── Views/                  # Razor views và template HTML
 │   └── wwwroot/                # Static assets (CSS, JS, hình ảnh)
 │
-├── database/                   # Truy cập dữ liệu và lưu trữ
-│   ├── Data/                   # EF Core DbContext và models
-│   └── Migrations/             # File migration cơ sở dữ liệu
+├── database/                   # Dữ liệu/migrations cũ hoặc bản đồng bộ
 │
 ├── config/                     # File cấu hình
 │   ├── appsettings.json        # Cấu hình cho môi trường production
@@ -47,13 +48,13 @@ Trungtamai/
 
 ### Lớp Frontend
 
-- **Views/**: Razor views để render phía máy chủ
-- **wwwroot/**: Các tài sản tĩnh được phục vụ trực tiếp cho client
+- **backend/Views/**: Razor views để render phía máy chủ
+- **frontend/**: Tài nguyên giao diện được lưu riêng trong repository
 
 ### Lớp Database
 
-- **Data/**: Entity Framework Core context và database models
-- **Migrations/**: File migration EF Core để thay đổi schema cơ sở dữ liệu
+- **backend/Data/**: Entity Framework Core context và database models
+- **backend/Migrations/**: File migration EF Core để thay đổi schema cơ sở dữ liệu
 
 ### Lớp Cấu Hình
 
@@ -66,13 +67,14 @@ Trungtamai/
 ## Xây Dựng và Chạy Ứng Dụng
 
 1. Điều hướng đến thư mục `backend`
-2. Chạy: `dotnet build` (từ thư mục backend hoặc cập nhật đường dẫn trong csproj)
-3. Chạy: `dotnet run`
+2. Chạy: `dotnet restore`
+3. Chạy: `dotnet build`
+4. Chạy: `dotnet run --launch-profile http`
 
-Cấu hình được tải từ thư mục `config` khi khởi động ứng dụng.
+Cấu hình được tải từ `config/appsettings.json` khi khởi động ứng dụng.
+Ứng dụng HTTP chạy tại `http://localhost:5088`; HTTPS chạy tại `https://localhost:7206`.
 
 ## Ghi Chú Phát Triển
 
-- Hãy chắc chắn cập nhật các build scripts để tính đến vị trí mới của thư mục `backend/`
-- Database migrations nên được chạy từ thư mục backend
-- Frontend assets được phục vụ từ `frontend/wwwroot/` thông qua backend
+- Các lệnh build và migration nên được chạy từ thư mục `backend/`
+- `Program.cs` tự chạy migration khi ứng dụng khởi động

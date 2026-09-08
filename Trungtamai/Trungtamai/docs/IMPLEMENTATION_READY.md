@@ -128,12 +128,12 @@ E: "Tôi không thể cung cấp thông tin học phí cá nhân của học vi�
 - [x] All handlers compiled
 - [x] No database migration needed (existing schema)
 - [x] Session middleware configured
-- [x] Gemini API key configured in appsettings.json
+- [x] Gemini API key configured in config/appsettings.json
 
 ### 2. Deploy to Test Environment
 
 ```powershell
-cd d:\Trungtamai\Trungtamai\Trungtamai
+cd d:\Trungtamai\Trungtamai\Trungtamai\backend
 dotnet publish -c Release -o publish
 # Copy to test server or run locally
 dotnet publish\Trungtamai.dll
