@@ -174,6 +174,24 @@ ViewBag.TongConNo = tongConNo;
                 return RedirectToAction(nameof(HocVien));
             }
 
+            var lopChon = await _context.LopHocs
+                .FirstOrDefaultAsync(x => x.TenLop == (lopHoc ?? "").Trim());
+
+            if (lopChon == null)
+            {
+                TempData["Error"] = "Không tìm thấy lớp học.";
+                return RedirectToAction(nameof(HocVien));
+            }
+
+            var soHocVienDangHoc = await _context.HocViens
+                .CountAsync(x => x.LopHoc == lopChon.TenLop && x.TrangThai == "Đang học");
+
+            if (soHocVienDangHoc >= lopChon.SiSoToiDa)
+            {
+                TempData["Error"] = $"Lớp {lopChon.TenLop} đã đủ sĩ số tối đa.";
+                return RedirectToAction(nameof(HocVien));
+            }
+
             string emailTrim = email.Trim();
 
             bool taiKhoanTonTai = await _context.NguoiDungs
@@ -269,6 +287,32 @@ public async Task<IActionResult> SuaHocVien(
         return RedirectToAction(nameof(HocVien));
     }
 
+    string lopMoi = (lopHoc ?? "").Trim();
+    string trangThaiMoi = string.IsNullOrWhiteSpace(trangThai) ? "Đang học" : trangThai.Trim();
+
+    if (trangThaiMoi == "Đang học")
+    {
+        var lopChon = await _context.LopHocs
+            .FirstOrDefaultAsync(x => x.TenLop == lopMoi);
+
+        if (lopChon == null)
+        {
+            TempData["Error"] = "Không tìm thấy lớp học.";
+            return RedirectToAction(nameof(HocVien));
+        }
+
+        var soHocVienKhacDangHoc = await _context.HocViens
+            .CountAsync(x => x.Id != hv.Id &&
+                             x.LopHoc == lopChon.TenLop &&
+                             x.TrangThai == "Đang học");
+
+        if (soHocVienKhacDangHoc >= lopChon.SiSoToiDa)
+        {
+            TempData["Error"] = $"Lớp {lopChon.TenLop} đã đủ sĩ số tối đa.";
+            return RedirectToAction(nameof(HocVien));
+        }
+    }
+
     string emailMoi = email.Trim();
     string emailCu = hv.Email;
 
@@ -294,7 +338,7 @@ public async Task<IActionResult> SuaHocVien(
             hv.KhoaHoc = khoaMoi;
             hv.LopHoc = (lopHoc ?? "").Trim();
             hv.NgonNgu = (ngonNgu ?? "").Trim();
-            hv.TrangThai = string.IsNullOrWhiteSpace(trangThai) ? "Đang học" : trangThai.Trim();
+            hv.TrangThai = trangThaiMoi;
 
             // Luôn lấy học phí phải đóng = giá khóa học hiện tại
             if (!string.IsNullOrEmpty(khoaMoi))
