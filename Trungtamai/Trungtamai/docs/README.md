@@ -51,7 +51,23 @@
 - **Visual Studio 2022** hoặc **VS Code** (để phát triển)
 - **Git** (quản lý code)
 
-### API Key tùy chọn
+### Gemini API key
+
+API key chỉ bắt buộc khi sử dụng chatbot. Có thể cấu hình bằng biến môi trường để không lưu khóa trong Git:
+
+PowerShell:
+
+```powershell
+$env:GEMINI_API_KEY = "YOUR_GEMINI_API_KEY"
+```
+
+Linux/macOS:
+
+```bash
+export GEMINI_API_KEY="YOUR_GEMINI_API_KEY"
+```
+
+Hoặc điền giá trị `Gemini:ApiKey` trong `config/appsettings.json` khi chạy cục bộ. Không commit API key thật lên repository.
 
 - **Google Gemini API Key** - cần nếu muốn sử dụng chatbot
 
@@ -60,14 +76,14 @@
 ### 1. Clone Repository
 
 ```bash
-git clone <repository-url>
-cd Trungtamai/Trungtamai/Trungtamai/backend
+git clone https://github.com/dtc245200106-ux/Trungtamai.git
+cd Trungtamai
 ```
 
 ### 2. Cài đặt Dependencies
 
 ```bash
-dotnet restore
+dotnet restore backend/Trungtamai.csproj
 ```
 
 ### 3. Cấu hình Database
@@ -98,8 +114,10 @@ Cập nhật connection string trong `config/appsettings.json`:
 
 ```bash
 dotnet tool install --global dotnet-ef
-dotnet ef database update
+dotnet ef database update --project backend/Trungtamai.csproj --startup-project backend/Trungtamai.csproj
 ```
+
+Lệnh trên được chạy từ thư mục gốc của repository để ứng dụng nạp đúng cấu hình trong `config/appsettings.json`.
 
 ## 🔧 Cấu hình
 
@@ -148,15 +166,15 @@ dotnet ef database update
 ### Development Mode
 
 ```bash
-dotnet run
+dotnet run --project backend/Trungtamai.csproj
 ```
 
-Ứng dụng sẽ khởi động tại: `http://localhost:5088` hoặc `https://localhost:7206`.
+Ứng dụng sẽ khởi động tại địa chỉ được hiển thị trong console, thường là `http://localhost:5088` hoặc `https://localhost:7206`.
 
 ### Production Mode
 
 ```bash
-dotnet publish -c Release -o publish
+dotnet publish backend/Trungtamai.csproj -c Release -o publish
 cd publish
 dotnet Trungtamai.dll
 ```
@@ -168,6 +186,8 @@ dotnet Trungtamai.dll
 3. Trình duyệt sẽ mở tự động
 
 ## 📁 Cấu trúc Project
+
+Các thư mục mã nguồn ứng dụng bên dưới nằm trong `backend/`; `config/`, `frontend/`, `database/` và `docs/` nằm ở cấp repository.
 
 ```
 Trungtamai/
@@ -335,8 +355,10 @@ Xem chi tiết tại: [CHATBOT_HANDLER_FLOW.md](CHATBOT_HANDLER_FLOW.md)
 ### Chạy Unit Tests (nếu có)
 
 ```bash
-dotnet test
+dotnet test backend/Trungtamai.csproj
 ```
+
+Hiện repository chưa có project kiểm thử tự động riêng; tài liệu chatbot cung cấp các kịch bản kiểm thử thủ công.
 
 ### Test Chatbot qua Postman
 
@@ -437,7 +459,7 @@ Sửa `appsettings.Development.json`:
 
 ```bash
 # 1. Publish
-dotnet publish -c Release -o publish
+dotnet publish backend/Trungtamai.csproj -c Release -o publish
 
 # 2. Zip file
 Compress-Archive -Path publish -DestinationPath app.zip
@@ -465,7 +487,7 @@ ENTRYPOINT ["dotnet", "Trungtamai.dll"]
 ## 📞 Hỗ trợ & Tài liệu
 
 - **Project Issues**: GitHub Issues
-- **Documentation**: `/Documents` folder
+- **Documentation**: `/docs` folder
 - **Chatbot Flow**: [CHATBOT_HANDLER_FLOW.md](CHATBOT_HANDLER_FLOW.md)
 - **Test Cases**: [CHATBOT_TEST_SCENARIOS.md](CHATBOT_TEST_SCENARIOS.md)
 - **Implementation**: [IMPLEMENTATION_READY.md](IMPLEMENTATION_READY.md)
@@ -482,4 +504,4 @@ Pull requests được chào đón. Để các thay đổi lớn, vui lòng tạ
 
 **Phiên bản**: 1.0  
 **Cập nhật lần cuối**: 2026-09-01  
-**Trạng thái**: ✅ Production Ready
+**Trạng thái**: Development / Academic Project
