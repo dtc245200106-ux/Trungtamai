@@ -18,13 +18,26 @@ function formatChatbotResponse(value) {
       const rendered = escapeChatbotHtml(line)
         .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
         .replace(/\*(.+?)\*/g, "<em>$1</em>");
+      const listMatch = line.match(/^\s*([-*]|\d+[.)])\s+(.+)$/u);
 
-      if (/^\s*(#{1,3}\s+|[A-ZÀ-Ỹ][^.!?]{2,}:\s*$)/u.test(line) || /^\s*(BÀI TẬP|Bài tập|MỤC TIÊU|Mục tiêu|THỜI LƯỢNG|Thời lượng|ĐỀ BÀI|Đề bài|YÊU CẦU|Yêu cầu|ĐÁP ÁN GỢI Ý|Đáp án gợi ý|GỢI Ý CHẤM ĐIỂM|Gợi ý chấm điểm).*$/u.test(trimmed)) {
+      if (
+        /^\s*(#{1,3}\s+|[A-ZÀ-Ỹ][^.!?]{2,}:\s*$)/u.test(line) ||
+        /^\s*(BÀI TẬP|Bài tập|MỤC TIÊU|Mục tiêu|THỜI LƯỢNG|Thời lượng|ĐỀ BÀI|Đề bài|YÊU CẦU|Yêu cầu|ĐÁP ÁN GỢI Ý|Đáp án gợi ý|GỢI Ý CHẤM ĐIỂM|Gợi ý chấm điểm).*$/u.test(
+          trimmed,
+        )
+      ) {
         return `<div class="chatbot-heading">${rendered.replace(/^\s*#{1,3}\s+/u, "")}</div>`;
       }
 
-      if (/^\s*([-*]|\d+[.)])\s+/u.test(line)) {
-        return `<div class="chatbot-list-item">${rendered}</div>`;
+      if (listMatch) {
+        const marker = listMatch[1].match(/^\d/u)
+          ? `${listMatch[1].replace(/[.)]$/u, "")}.`
+          : "•";
+        const item = escapeChatbotHtml(listMatch[2])
+          .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+          .replace(/\*(.+?)\*/g, "<em>$1</em>");
+
+        return `<div class="chatbot-list-item"><span class="chatbot-list-marker">${marker}</span><span>${item}</span></div>`;
       }
 
       if (!trimmed) return "&nbsp;";
@@ -62,9 +75,10 @@ function themTinNhanChatbot(noiDung, nguoiGui) {
 const chatbotStyle = document.createElement("style");
 chatbotStyle.textContent = `
   .chatbot-response { overflow-wrap: anywhere; line-height: 1.7; }
-  .chatbot-heading { display: block; margin-top: 0.7rem; margin-bottom: 0.2rem; color: #091426; font-weight: 700; }
-  .chatbot-list-item { display: block; padding-left: 1rem; margin-bottom: 0.15rem; position: relative; }
-  .chatbot-list-item::before { content: "•"; position: absolute; left: 0.2rem; color: #0b1736; }
+  .chatbot-heading { display: block; margin-top: 0.8rem; margin-bottom: 0.3rem; color: #091426; font-weight: 700; line-height: 1.45; }
+  .chatbot-heading:first-child { margin-top: 0; }
+  .chatbot-list-item { display: flex; gap: 0.45rem; align-items: flex-start; margin: 0.18rem 0; padding-left: 0.15rem; }
+  .chatbot-list-marker { flex: 0 0 1.25rem; color: #0b1736; font-weight: 700; text-align: right; }
   .chatbot-response strong { color: #0b1736; }
   .chatbot-response em { font-style: italic; color: #3b4657; }
 `;

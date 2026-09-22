@@ -8,6 +8,73 @@ Tài liệu này mô tả các luồng chính đang được triển khai trong 
 - Middleware phân quyền kiểm tra Session trước khi cho phép truy cập controller.
 - Quản lý thêm học viên, tạo tài khoản đăng nhập và cập nhật sĩ số lớp.
 
+## 0. Biểu đồ thành phần hệ thống hiện tại
+
+Đây là biểu đồ thành phần (UML Component Diagram) của hệ thống đang có trong mã
+nguồn. Các khối bên trong ứng dụng là component phần mềm; các đường nối thể hiện
+quan hệ gọi hoặc phụ thuộc, không khẳng định mỗi khối là một microservice riêng.
+
+Ảnh biểu đồ: [component-diagram-trungtamai.svg](component-diagram-trungtamai.svg)
+
+```mermaid
+flowchart LR
+    QL[Quản lý]
+    GV[Giáo viên]
+    HV[Học viên]
+    TVV[Tư vấn viên]
+
+    subgraph CLIENT[Client Components]
+        WEB[Web UI<br/>Razor Views + wwwroot]
+    end
+
+    subgraph APP[Trungtamai ASP.NET Core MVC]
+        ROUTER[ASP.NET Core Routing]
+        ACCOUNT[AccountController]
+        ROLE[Role Controllers<br/>QuanLyController<br/>GiaoVienController<br/>HocVienController<br/>TuVanVienController]
+        CHAT[ChatbotController<br/>REST API]
+        AUTH[AuthorizeRoleAttribute]
+        SESSION[Session Store<br/>UserId, HoTen, VaiTro]
+        CHATDATA[ChatbotDataService]
+        GEMINISVC[GeminiService]
+        LOG[AILoggingService]
+        DBACCESS[AppDbContext<br/>EF Core]
+        DOMAIN[Domain Model Components<br/>NguoiDung, HocVien, GiaoVien,<br/>TuVanVien, KhoaHoc, LopHoc,<br/>DiemDanh, DiemSo, ChatMessage]
+    end
+
+    SQL[(SQL Server)]
+    GEMINI[Gemini API<br/>External Component]
+
+    QL --> WEB
+    GV --> WEB
+    HV --> WEB
+    TVV --> WEB
+    WEB --> ROUTER
+    ROUTER --> ACCOUNT
+    ROUTER --> ROLE
+    WEB --> CHAT
+    ACCOUNT --> DBACCESS
+    ROLE --> AUTH
+    CHAT --> AUTH
+    AUTH <--> SESSION
+    ROLE --> DBACCESS
+    CHAT --> CHATDATA
+    CHAT --> GEMINISVC
+    CHAT --> LOG
+    CHATDATA --> DBACCESS
+    GEMINISVC --> GEMINI
+    DBACCESS --> DOMAIN
+    DBACCESS --> SQL
+```
+
+### Phạm vi được xác nhận
+
+- Bốn actor hiện có: `QuanLy`, `GiaoVien`, `HocVien`, `TuVanVien`.
+- Các component controller hiện có: `AccountController`, `QuanLyController`, `GiaoVienController`, `HocVienController`, `TuVanVienController` và `ChatbotController`.
+- Phân quyền dùng `AuthorizeRoleAttribute` và ASP.NET Core Session.
+- Dữ liệu nghiệp vụ được truy cập qua `AppDbContext` và Entity Framework Core.
+- Chatbot gọi `GeminiService`, lấy dữ liệu được phép xem qua `ChatbotDataService` và lưu lịch sử vào `ChatMessage`.
+- Qdrant, dịch vụ AI chấm điểm, phân tích dự đoán, lưu trữ tệp và cổng thanh toán không được đưa vào vì chưa có component triển khai tương ứng trong code hiện tại.
+
 ## 1. Sơ đồ hoạt động tổng quát
 
 Ảnh sơ đồ hoạt động: [so-do-hoat-dong-trungtamai-gon.svg](so-do-hoat-dong-trungtamai-gon.svg)
