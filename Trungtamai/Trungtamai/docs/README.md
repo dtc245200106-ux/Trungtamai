@@ -488,6 +488,7 @@ ENTRYPOINT ["dotnet", "Trungtamai.dll"]
 
 - **Project Issues**: GitHub Issues
 - **Documentation**: `/docs` folder
+- **Prompt xây dựng hệ thống**: [prompt-tao-app-trungtamai.md](prompt-tao-app-trungtamai.md)
 - **Chatbot Flow**: [CHATBOT_HANDLER_FLOW.md](CHATBOT_HANDLER_FLOW.md)
 - **Test Cases**: [CHATBOT_TEST_SCENARIOS.md](CHATBOT_TEST_SCENARIOS.md)
 - **Implementation**: [IMPLEMENTATION_READY.md](IMPLEMENTATION_READY.md)
