@@ -53,6 +53,12 @@
         .sidebar-item:hover { background: #e6e8ea; }
         .sidebar-item.active { background: #091426; color: white; }
     </style>
+    <script src="~/js/table-pagination.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            TablePagination.init("scoresTable", "scoresPagination");
+        });
+    </script>
 </head>
 <body class="bg-background text-on-surface">
     <div class="min-h-screen flex">
@@ -195,7 +201,7 @@
                 <!-- Bảng kết quả -->
                 <div class="bg-white rounded-xl border border-outline-variant overflow-hidden">
                     <div class="overflow-x-auto">
-                        <table class="min-w-full text-left text-sm">
+                        <table id="scoresTable" class="min-w-full text-left text-sm">
                             <thead class="bg-surface-container-low text-on-surface-variant">
                                 <tr>
                                     <th class="px-6 py-4 font-medium">Mã HV</th>
@@ -207,6 +213,7 @@
                                     <th class="px-6 py-4 font-medium text-center">KT lớn</th>
                                     <th class="px-6 py-4 font-medium text-center">TB</th>
                                     <th class="px-6 py-4 font-medium text-center">Kết quả</th>
+                                    <th class="px-6 py-4 font-medium">Nhận xét AI</th>
                                     <th class="px-6 py-4 font-medium">GV nhập</th>
                                     <th class="px-6 py-4 font-medium">Ngày cập nhật</th>
                                 </tr>
@@ -215,7 +222,7 @@
                                 @if (danhSach.Count == 0)
                                 {
                                     <tr>
-                                        <td colspan="11" class="px-6 py-10 text-center text-on-surface-variant">
+                                        <td colspan="12" class="px-6 py-10 text-center text-on-surface-variant">
                                             Không có dữ liệu điểm số.
                                         </td>
                                     </tr>
@@ -224,7 +231,7 @@
                                 {
                                     foreach (var item in danhSach)
                                     {
-                                        <tr class="border-t border-outline-variant hover:bg-surface-container-low">
+                                        <tr data-pagination-row class="border-t border-outline-variant hover:bg-surface-container-low">
                                             <td class="px-6 py-4">@item.MaHocVien</td>
                                             <td class="px-6 py-4 font-medium">@item.HoTenHocVien</td>
                                             <td class="px-6 py-4">@item.MaLop</td>
@@ -249,6 +256,13 @@
                                                     <span class="inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">Chưa thi</span>
                                                 }
                                             </td>
+                                            <td class="px-6 py-3 align-top min-w-[220px]">
+                                                <button type="button" onclick="taoNhanXetAI(@item.HocVienId, @(item.LopHocId > 0 ? item.LopHocId.ToString() : "null"), this)"
+                                                        class="px-3 py-1.5 rounded-lg border border-outline-variant text-xs font-medium text-primary hover:bg-surface-container transition">
+                                                    Nhận xét AI
+                                                </button>
+                                                <div class="mt-2 text-xs leading-5 text-on-surface-variant"></div>
+                                            </td>
                                             <td class="px-6 py-4">@item.GiaoVienNhap</td>
                                             <td class="px-6 py-4">@item.NgayCapNhat.ToString("dd/MM/yyyy")</td>
                                         </tr>
@@ -256,11 +270,40 @@
                                 }
                             </tbody>
                         </table>
+                        <div id="scoresPagination" class="hidden flex items-center justify-between gap-4 border-t border-outline-variant px-5 py-4"></div>
                     </div>
                 </div>
             </div>
         </main>
     </div>
+
+    <script>
+        async function taoNhanXetAI(hocVienId, lopHocId, button) {
+            const commentBox = button.nextElementSibling;
+            const originalText = button.textContent;
+            button.disabled = true;
+            button.textContent = "Đang nhận xét...";
+            commentBox.textContent = "";
+
+            try {
+                const response = await fetch("/api/chatbot/score-comment", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    credentials: "same-origin",
+                    body: JSON.stringify({ hocVienId, lopHocId })
+                });
+                const data = await response.json();
+                commentBox.textContent = response.ok
+                    ? (data.comment || "Chưa có nhận xét.")
+                    : (data.message || "Không thể tạo nhận xét AI.");
+            } catch {
+                commentBox.textContent = "Không thể kết nối đến dịch vụ AI.";
+            } finally {
+                button.disabled = false;
+                button.textContent = originalText;
+            }
+        }
+    </script>
 
     <!-- Chatbot (giữ nguyên nếu bạn đang dùng) -->
     <div id="oChatbotPanel"
@@ -354,5 +397,6 @@
         }
     </script>
 <script src="~/js/chatbot-history.js" asp-append-version="true"></script>
+    <script src="~/js/chatbot-attachments.js" asp-append-version="true"></script>
 </body>
 </html>

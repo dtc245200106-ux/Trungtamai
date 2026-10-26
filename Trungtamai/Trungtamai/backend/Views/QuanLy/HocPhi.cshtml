@@ -59,6 +59,12 @@
         .sidebar-item.active { background: #091426; color: white; }
         .modal-backdrop { background: rgba(9,20,38,0.45); }
     </style>
+    <script src="~/js/table-pagination.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            TablePagination.init("tuitionTable", "tuitionPagination");
+        });
+    </script>
 </head>
 <body class="bg-background text-on-surface">
     <div class="min-h-screen flex">
@@ -123,15 +129,6 @@
                     <p class="text-sm text-on-surface-variant mt-0.5">Theo dõi thanh toán, công nợ và doanh thu thực tế</p>
                 </div>
                 <div class="flex items-center gap-3">
-                    <form asp-action="DongBoHocPhiTuKhoaHoc" method="post" class="inline">
-                        @Html.AntiForgeryToken()
-                        <button type="submit"
-                                class="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-outline-variant text-sm font-medium text-on-surface-variant hover:bg-surface-container transition"
-                                title="Gán học phí = giá khóa học cho HV chưa có học phí">
-                            <span class="material-symbols-outlined text-[20px]">sync</span>
-                            Đồng bộ từ khóa học
-                        </button>
-                    </form>
                     <a asp-controller="Account" asp-action="Logout"
                        class="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-outline-variant text-sm font-medium text-on-surface-variant hover:bg-surface-container transition">
                         <span class="material-symbols-outlined text-[20px]">logout</span>
@@ -249,7 +246,7 @@
                 <!-- Table -->
                 <div class="bg-white rounded-xl border border-outline-variant overflow-hidden">
                     <div class="overflow-x-auto">
-                        <table class="min-w-full text-left text-sm">
+                        <table id="tuitionTable" class="min-w-full text-left text-sm">
                             <thead class="bg-surface-container-low text-on-surface-variant">
                                 <tr>
                                     <th class="px-5 py-3.5 font-medium">Mã HV</th>
@@ -268,7 +265,7 @@
                             {
                                 <tr>
                                     <td colspan="9" class="px-5 py-10 text-center text-on-surface-variant">
-                                        Chưa có dữ liệu học phí. Thêm học viên hoặc bấm "Đồng bộ từ khóa học".
+                                        Chưa có dữ liệu học phí. Thêm học viên để bắt đầu theo dõi.
                                     </td>
                                 </tr>
                             }
@@ -282,7 +279,7 @@
                                         "Chưa đủ" => "bg-amber-100 text-amber-700",
                                         _ => "bg-red-100 text-red-700"
                                     };
-                                    <tr class="border-t border-outline-variant hover:bg-surface-container-low">
+                                    <tr data-pagination-row class="border-t border-outline-variant hover:bg-surface-container-low">
                                         <td class="px-5 py-3.5 text-on-surface-variant">@hv.MaHocVien</td>
                                         <td class="px-5 py-3.5">
                                             <div class="font-medium text-on-surface">@hv.HoTen</div>
@@ -315,6 +312,7 @@
                             }
                             </tbody>
                         </table>
+                        <div id="tuitionPagination" class="hidden flex items-center justify-between gap-4 border-t border-outline-variant px-5 py-4"></div>
                     </div>
                 </div>
             </div>

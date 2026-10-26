@@ -18,6 +18,12 @@
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:FILL@0..1" rel="stylesheet" />
+    <script src="~/js/table-pagination.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            TablePagination.init("teachersTable", "teachersPagination");
+        });
+    </script>
 
     <script>
         tailwind.config = {
@@ -197,7 +203,7 @@
                 <!-- TABLE -->
                 <div class="bg-white rounded-xl border border-outline-variant overflow-hidden">
                     <div class="overflow-x-auto">
-                        <table class="min-w-full text-left text-sm">
+                        <table id="teachersTable" class="min-w-full text-left text-sm">
                             <thead class="bg-surface-container-low text-on-surface-variant">
                                 <tr>
                                     <th class="px-5 py-4 font-medium">Mã GV</th>
@@ -227,7 +233,7 @@
                                             vietTat = cacTu[0].Substring(0, 1);
                                         }
 
-                                        <tr class="dong-giao-vien border-t border-outline-variant hover:bg-surface-container-low">
+                                        <tr data-pagination-row class="dong-giao-vien border-t border-outline-variant hover:bg-surface-container-low">
                                             <td class="px-5 py-4">
                                                 <span class="inline-flex px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary">
                                                     @giaoVien.MaGiaoVien
@@ -294,6 +300,7 @@
                                 }
                             </tbody>
                         </table>
+                        <div id="teachersPagination" class="hidden flex items-center justify-between gap-4 border-t border-outline-variant px-5 py-4"></div>
                     </div>
                 </div>
             </div>
@@ -745,5 +752,6 @@
     }
 </script>
 <script src="~/js/chatbot-history.js" asp-append-version="true"></script>
+    <script src="~/js/chatbot-attachments.js" asp-append-version="true"></script>
 </body>
 </html>

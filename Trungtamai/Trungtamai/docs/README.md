@@ -77,7 +77,7 @@ Hoặc điền giá trị `Gemini:ApiKey` trong `config/appsettings.json` khi ch
 
 ```bash
 git clone https://github.com/dtc245200106-ux/Trungtamai.git
-cd Trungtamai
+cd Trungtamai/Trungtamai
 ```
 
 ### 2. Cài đặt Dependencies
@@ -110,14 +110,9 @@ Cập nhật connection string trong `config/appsettings.json`:
 }
 ```
 
-### 4. Chạy Migration (tạo database schema)
+### 4. Khởi tạo Database
 
-```bash
-dotnet tool install --global dotnet-ef
-dotnet ef database update --project backend/Trungtamai.csproj --startup-project backend/Trungtamai.csproj
-```
-
-Lệnh trên được chạy từ thư mục gốc của repository để ứng dụng nạp đúng cấu hình trong `config/appsettings.json`.
+Khi ứng dụng khởi động, Entity Framework Core tự áp dụng các migration để tạo/cập nhật schema. Ở môi trường Development, hệ thống tự thêm dữ liệu mẫu nếu database đang trống; không cần chạy lệnh migration riêng.
 
 ## 🔧 Cấu hình
 
@@ -159,7 +154,7 @@ Lệnh trên được chạy từ thư mục gốc của repository để ứng 
 
 1. Truy cập: https://aistudio.google.com/apikey
 2. Tạo API key mới
-3. Copy key và paste vào `config/appsettings.json`.
+3. Đặt key vào biến môi trường `GEMINI_API_KEY` (khuyến nghị) hoặc cấu hình `Gemini:ApiKey` trong `config/appsettings.json`. Không commit API key thật lên Git.
 
 ## 🚀 Chạy ứng dụng
 
@@ -169,7 +164,23 @@ Lệnh trên được chạy từ thư mục gốc của repository để ứng 
 dotnet run --project backend/Trungtamai.csproj
 ```
 
-Ứng dụng sẽ khởi động tại địa chỉ được hiển thị trong console, thường là `http://localhost:5088` hoặc `https://localhost:7206`.
+Chạy lệnh từ thư mục `Trungtamai/` bên trong repository (thư mục chứa `backend/`, `config/` và `docs/`). Ứng dụng sẽ khởi động tại `http://localhost:5088` hoặc `https://localhost:7206`.
+
+Trong PowerShell, có thể khởi chạy từ thư mục gốc repository bằng:
+
+```powershell
+cd .\Trungtamai
+dotnet run --project .\backend\Trungtamai.csproj
+```
+
+Khi database còn trống, tài khoản quản lý demo trong môi trường Development là:
+
+```text
+Tài khoản: admin@trungtamai.local
+Mật khẩu:  Demo123!
+```
+
+Tài khoản demo chỉ được tạo khi các bảng dữ liệu của ứng dụng đều đang trống.
 
 ### Production Mode
 
@@ -187,58 +198,24 @@ dotnet Trungtamai.dll
 
 ## 📁 Cấu trúc Project
 
-Các thư mục mã nguồn ứng dụng bên dưới nằm trong `backend/`; `config/`, `frontend/`, `database/` và `docs/` nằm ở cấp repository.
+Trong repository, mã nguồn ứng dụng nằm dưới `Trungtamai/Trungtamai/`. Bên trong thư mục này, mã C# nằm trong `backend/`; các thư mục `config/`, `frontend/`, `database/` và `docs/` nằm cùng cấp với `backend/`.
 
 ```
 Trungtamai/
-├── Controllers/              # Xử lý yêu cầu HTTP
-│   ├── AccountController.cs  # Đăng nhập / Đăng xuất
-│   ├── ChatbotController.cs  # Chatbot API
-│   ├── QuanLyController.cs   # Trang quản lý
-│   ├── GiaoVienController.cs # Trang giáo viên
-│   ├── HocVienController.cs  # Trang học viên
-│   └── TuVanVienController.cs # Trang tư vấn viên
-│
-├── Models/                   # Các model / Entity
-│   ├── HocVien.cs           # Học viên
-│   ├── GiaoVien.cs          # Giáo viên
-│   ├── LopHoc.cs            # Lớp học
-│   ├── KhoaHoc.cs           # Khóa học
-│   ├── DiemSo.cs            # Điểm số
-│   ├── DiemDanh.cs          # Điểm danh
-│   ├── ChatMessage.cs       # Lịch sử chat
-│   └── ...
-│
-├── Services/                 # Business logic
-│   ├── GeminiService.cs      # Gọi Gemini API
-│   ├── ChatbotDataService.cs # Xử lý dữ liệu chatbot
-│   └── ...
-│
-├── Data/                     # Database
-│   ├── AppDbContext.cs       # Entity Framework DbContext
-│   └── Migrations/           # Database migrations
-│
-├── Views/                    # MVC Views
-│   ├── Account/
-│   ├── QuanLy/
-│   ├── GiaoVien/
-│   ├── HocVien/
-│   ├── TuVanVien/
-│   └── Shared/
-│
-├── wwwroot/                  # Static files (CSS, JS, Images)
-│   ├── css/
-│   ├── js/
-│   └── images/
-│
-├── Program.cs                # Application entry point
-├── config/appsettings.json   # Cấu hình ứng dụng
-├── Trungtamai.csproj         # Project file
-│
-└── Documentation/
-    ├── CHATBOT_TEST_SCENARIOS.md  # Test scenarios
-    ├── CHATBOT_HANDLER_FLOW.md    # Technical flow
-    └── IMPLEMENTATION_READY.md    # Implementation notes
+└── Trungtamai/
+    ├── backend/                  # Ứng dụng ASP.NET Core MVC
+    │   ├── Controllers/
+    │   ├── Models/
+    │   ├── Services/
+    │   ├── Data/Migrations/
+    │   ├── Views/
+    │   ├── wwwroot/
+    │   ├── Program.cs
+    │   └── Trungtamai.csproj
+    ├── config/appsettings.json
+    ├── frontend/
+    ├── database/
+    └── docs/
 ```
 
 ## 👥 Vai trò & Quyền hạn

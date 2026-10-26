@@ -90,14 +90,6 @@ namespace Trungtamai.Controllers
 
         public IActionResult Logout()
         {
-            if (int.TryParse(HttpContext.Session.GetString("UserId"), out var userId))
-            {
-                var history = _context.ChatMessages
-                    .Where(x => x.UserId == userId);
-                _context.ChatMessages.RemoveRange(history);
-                _context.SaveChanges();
-            }
-
             HttpContext.Session.Clear();
 
             return RedirectToAction(

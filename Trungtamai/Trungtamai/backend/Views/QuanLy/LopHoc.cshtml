@@ -53,6 +53,12 @@
         .stat-card { transition: all 0.2s ease; }
         .stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); }
     </style>
+    <script src="~/js/table-pagination.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            TablePagination.init("classesTable", "classesPagination");
+        });
+    </script>
 </head>
 <body class="bg-background text-on-surface">
 <div class="min-h-screen flex">
@@ -205,7 +211,7 @@
             <!-- TABLE -->
             <div class="bg-white rounded-xl border border-outline-variant overflow-hidden">
                 <div class="overflow-x-auto">
-                    <table class="min-w-full text-left text-sm">
+                    <table id="classesTable" class="min-w-full text-left text-sm">
                         <thead class="bg-surface-container-low text-on-surface-variant">
                             <tr>
                                 <th class="px-5 py-4 font-medium">Mã lớp</th>
@@ -230,7 +236,7 @@
                                         ? "bg-amber-100 text-amber-700"
                                         : "bg-gray-100 text-gray-600";
 
-                                <tr class="dong-lop border-t border-outline-variant hover:bg-surface-container-low"
+                                <tr data-pagination-row class="dong-lop border-t border-outline-variant hover:bg-surface-container-low"
     data-ngon-ngu="@lop.NgonNgu">
                                     <td class="px-5 py-4">
                                         <span class="inline-flex px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary">@lop.MaLop</span>
@@ -278,6 +284,7 @@
                         }
                         </tbody>
                     </table>
+                    <div id="classesPagination" class="hidden flex items-center justify-between gap-4 border-t border-outline-variant px-5 py-4"></div>
                 </div>
             </div>
         </div>
@@ -715,6 +722,8 @@ function locDanhSachLop() {
 
         dong.style.display = (matchText && matchNgonNgu) ? "" : "none";
     });
+
+    TablePagination.refresh("classesTable", true);
 }
 
 var timKiemLop = document.getElementById("timKiemLop");
@@ -877,5 +886,6 @@ function chonCaNhanhSua(batDau, ketThuc) {
 }
 </script>
 <script src="~/js/chatbot-history.js" asp-append-version="true"></script>
+    <script src="~/js/chatbot-attachments.js" asp-append-version="true"></script>
 </body>
 </html>

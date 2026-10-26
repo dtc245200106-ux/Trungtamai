@@ -171,6 +171,12 @@
 
     </style>
 
+    <script src="~/js/table-pagination.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            TablePagination.init("coursesTable", "coursesPagination");
+        });
+    </script>
 </head>
 
 <body class="bg-background text-on-surface">
@@ -412,7 +418,7 @@
 
                 <div class="overflow-x-auto">
 
-                    <table class="w-full text-sm">
+                    <table id="coursesTable" class="w-full text-sm">
 
                         <thead>
                             <tr class="border-b border-surface-variant text-left">
@@ -442,6 +448,7 @@
                     </div>
 
                 </div>
+                <div id="coursesPagination" class="hidden flex items-center justify-between gap-4 border-t border-outline-variant px-6 py-4"></div>
 
             </div>
 
@@ -692,6 +699,7 @@
 
         hang.className =
             "table-row border-b border-surface-variant";
+        hang.dataset.paginationRow = "true";
 
 
         hang.innerHTML = `
@@ -757,6 +765,7 @@
         thanBang.appendChild(hang);
     });
 
+    TablePagination.refresh("coursesTable", true);
 
     renderThongKe();
 }
@@ -1133,5 +1142,6 @@
 
 </script>
 <script src="~/js/chatbot-history.js" asp-append-version="true"></script>
+    <script src="~/js/chatbot-attachments.js" asp-append-version="true"></script>
 </body>
 </html>
