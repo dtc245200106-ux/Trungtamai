@@ -509,9 +509,10 @@ namespace Trungtamai.Services
             foreach (var line in content.ReplaceLineEndings("\n").Split('\n'))
             {
                 var trimmed = line.Trim();
-                if (IsMarkdownTableRow(trimmed))
+                var delimiter = GetSpreadsheetDelimiter(trimmed);
+                if (delimiter.HasValue)
                 {
-                    var cells = ParseMarkdownTableRow(trimmed);
+                    var cells = ParseDelimitedSpreadsheetRow(trimmed, delimiter.Value);
                     if (cells.All(IsMarkdownTableSeparator))
                         continue;
                     if (headerRowIndex < 0)
@@ -541,6 +542,27 @@ namespace Trungtamai.Services
                 rows.Add([""]);
 
             return new ParsedSpreadsheet(rows, headerRowIndex);
+        }
+
+        private static char? GetSpreadsheetDelimiter(string line)
+        {
+            if (line.Contains('\t'))
+                return '\t';
+            if (line.Contains('|'))
+                return '|';
+            if (line.Contains(';'))
+                return ';';
+            return null;
+        }
+
+        private static List<string> ParseDelimitedSpreadsheetRow(string line, char delimiter)
+        {
+            var row = delimiter == '|'
+                ? line.Trim().Trim('|')
+                : line.Trim();
+            return row.Split(delimiter)
+                .Select(cell => NormalizeDocumentLine(cell.Trim()))
+                .ToList();
         }
 
         private static bool IsMarkdownTableRow(string line) =>
