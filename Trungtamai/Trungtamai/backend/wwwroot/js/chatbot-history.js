@@ -202,7 +202,6 @@ function installChatbotFileExports(messages) {
     }
   }
 
-  processRows(Array.from(messages.children));
   const observer = new MutationObserver((mutations) => {
     const rows = new Set();
     for (const mutation of mutations) {
