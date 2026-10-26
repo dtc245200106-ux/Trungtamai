@@ -164,7 +164,7 @@ function themTinNhanChatbot(noiDung, nguoiGui) {
 function installChatbotFileExports(messages) {
   let lastUserRequest = "";
 
-  function processRows(rows) {
+  function processRows(rows, autoExport = true) {
     for (const row of rows) {
       if (!(row instanceof HTMLElement) || row.parentElement !== messages) continue;
 
@@ -184,7 +184,7 @@ function installChatbotFileExports(messages) {
       addChatbotExportControls(row, content);
       const formats = requestedExportFormats(lastUserRequest);
       lastUserRequest = "";
-      if (formats.length === 1) {
+      if (autoExport && formats.length === 1) {
         void (async () => {
           const controls = row.querySelector("[data-chatbot-export-controls]");
           if (controls) controls.firstElementChild.textContent = "Đang tạo tệp...";
@@ -201,6 +201,8 @@ function installChatbotFileExports(messages) {
       }
     }
   }
+
+  processRows(Array.from(messages.children), false);
 
   const observer = new MutationObserver((mutations) => {
     const rows = new Set();
